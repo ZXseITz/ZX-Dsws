@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const path = require('path');
 const logger = require('morgan');
 
@@ -7,9 +8,9 @@ const schoolClassRouter = require('./routes/schoolClass');
 const app = express();
 const mongoose = require('mongoose');
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/schoolclass', schoolClassRouter);
