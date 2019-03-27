@@ -4,6 +4,7 @@ const path = require('path');
 const logger = require('morgan');
 
 const schoolClassRouter = require('./routes/schoolClass');
+const athleteRouter = require('./routes/athlete');
 
 const app = express();
 const mongoose = require('mongoose');
@@ -14,6 +15,7 @@ app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/schoolclass', schoolClassRouter);
+app.use('/athlete', athleteRouter);
 
 mongoose.connect('mongodb://localhost:27017/dsws');
 const db = mongoose.connection;
