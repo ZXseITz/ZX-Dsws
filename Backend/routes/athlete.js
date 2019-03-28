@@ -16,15 +16,20 @@ router.get('/', (req, res) => {
     const c = {};
     if (req.query.firstname) {
         c['firstname'] = req.query.firstname;
-    } else if (req.query.surname) {
+    }
+    if (req.query.surname) {
         c['surname'] = req.query.surname;
-    } else if (req.query.sex) {
+    }
+    if (req.query.sex) {
         c['sex'] = req.query.sex;
-    } else if (req.query.schoolClass) {
+    }
+    if (req.query.schoolClass) {
         c['schoolClass'] = req.query.schoolClass;
-    } else if (req.query.distance) {
+    }
+    if (req.query.distance) {
         c['distance'] = req.query.distance;
-    } else if (req.query.category) {
+    }
+    if (req.query.category) {
         c['category'] = req.query.category;
     }
 
@@ -33,7 +38,7 @@ router.get('/', (req, res) => {
             res.json(data);
         } else {
             console.error(err);
-            res.status(500).send();
+            res.status(400).send();
         }
     });
 });
@@ -44,7 +49,7 @@ router.get('/:id', (req, res) => {
             res.json(data);
         } else {
             console.error(err);
-            res.status(500).send();
+            res.status(404).send();
         }
     });
 });
@@ -57,13 +62,13 @@ router.post('/', (req, res) => {
     });
 });
 
-router.update('/:id', (req, res) => {
-    Athlete.findOneAndUpdate({ _id: req.params.id }, json, (err) => {
+router.put('/:id', (req, res) => {
+    Athlete.findOneAndUpdate({ _id: req.params.id }, json, err => {
         if (!err) {
             res.status(204).send()
         } else {
             console.error(err);
-            res.status(500).send();
+            res.status(404).send();
         }
     });
 });
@@ -74,7 +79,7 @@ router.delete('/:id', (req, res) => {
             res.status(204).send()
         } else {
             console.error(err);
-            res.status(500).send();
+            res.status(404).send();
         }
     });
 });
