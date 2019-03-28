@@ -32,8 +32,9 @@ router.get('/', (req, res) => {
     if (req.query.category) {
         c['category'] = req.query.category;
     }
-
-    Athlete.find(c, (err, data) => {
+    const query = Athlete.find(c);
+    query.sort({schoolClass: 'asc', surname: 'asc', firstname: 'asc'});
+    query.exec( (err, data) => {
         if (!err) {
             res.json(data);
         } else {

@@ -12,10 +12,15 @@ const mongoose = require('mongoose');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(logger('dev'));
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/schoolclass', schoolClassRouter);
-app.use('/athlete', athleteRouter);
+app.use('/api/schoolclass', schoolClassRouter);
+app.use('/api/athlete', athleteRouter);
 
 mongoose.connect('mongodb://localhost:27017/dsws');
 const db = mongoose.connection;
