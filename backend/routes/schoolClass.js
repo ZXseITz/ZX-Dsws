@@ -36,7 +36,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     const json = req.body;
-    SchoolClass.create(json, err => {
+    SchoolClass.insertMany(json, err => {
         if (err) res.status(500).send();
         else res.status(204).send();
     });
