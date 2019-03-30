@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const formidable = require('formidable');
 const FileReader = require('filereader');
+const upload = require('../upload');
 
 const Athlete = mongoose.model('Athlete', new mongoose.Schema({
     firstname: String,
@@ -97,8 +98,12 @@ router.post('/upload', (req, res) => {
             const csv = files.csv;
             const reader = new FileReader();
             reader.onload = () => {
-                const text = reader.result;
-                console.log(text);
+                const json = upload.csvToJson(reader.result);
+                console.log(json);
+                // Athlete.insertMany(json, err => {
+                //     if (err) res.status(500).send();
+                //     else res.status(204).send();
+                // });
                 res.status(204).send();
             };
             reader.readAsText(csv)
