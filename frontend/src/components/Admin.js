@@ -1,5 +1,6 @@
 import React, {Component} from "react"
 import {Button, Modal, Form, Table} from "react-bootstrap"
+import dateformat from "dateformat"
 
 export default class Admin extends Component {
     constructor(props) {
@@ -19,9 +20,9 @@ export default class Admin extends Component {
         fetch('http://localhost:8001/api/athlete', {
             method: 'GET'
         })
-            .catch(err => console.error(err))
             .then(res => res.json())
             .then(data => this.setState({athlete: data}))
+            .catch(err => console.error(err))
     };
 
     handleClose = () => this.setState({showModal: false});
@@ -51,6 +52,7 @@ export default class Admin extends Component {
                 <td>{item.firstname}</td>
                 <td>{item.surname}</td>
                 <td>{item.sex}</td>
+                <td>{dateformat(item.dateOfBirth, "dd.mm.yyyy")}</td>
                 <td>{item.schoolClass}</td>
                 <td>{item.category}</td>
                 <td>{item.distance}</td>
@@ -76,12 +78,15 @@ export default class Admin extends Component {
                     </Modal.Footer>
                 </Modal>
 
+                <Button variant="outline-primary" onClick={this.handleShow}>Upload</Button>
+
                 <Table>
                     <thead>
                     <tr>
                         <th>Vorname</th>
                         <th>Nachname</th>
                         <th>Geschlecht</th>
+                        <th>Geburtstag</th>
                         <th>Klasse</th>
                         <th>Kategorie</th>
                         <th>Distanz</th>
@@ -91,7 +96,7 @@ export default class Admin extends Component {
                     <tbody>
                     {rows}
                     </tbody>
-                </Table><Button variant="outline-primary" onClick={this.handleShow}>Upload</Button>
+                </Table>
             </div>
         );
     };

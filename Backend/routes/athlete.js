@@ -9,6 +9,7 @@ const Athlete = mongoose.model('Athlete', new mongoose.Schema({
     firstname: String,
     surname: String,
     sex: String,
+    dateOfBirth: Date,
     schoolClass: String,
     category: String,
     distance: Number,
@@ -60,7 +61,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     const json = req.body;
-    Athlete.insertMany(json, err => {
+    Athlete.create(json, (err, docs) => {
         if (err) res.status(500).send();
         else res.status(204).send();
     });
@@ -99,12 +100,11 @@ router.post('/upload', (req, res) => {
             const reader = new FileReader();
             reader.onload = () => {
                 const json = upload.csvToJson(reader.result);
-                console.log(json);
-                // Athlete.insertMany(json, err => {
-                //     if (err) res.status(500).send();
-                //     else res.status(204).send();
-                // });
-                res.status(204).send();
+                // console.log(json);
+                Athlete.insertMany(json, (err, docs) => {
+                    if (err) res.status(500).send();
+                    else res.status(204).send();
+                });
             };
             reader.readAsText(csv)
         }
