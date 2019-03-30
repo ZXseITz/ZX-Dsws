@@ -1,6 +1,7 @@
 import React, {Component} from "react"
+import {Table} from "react-bootstrap"
 
-export default class Dashboard extends Component {
+export default class Admin extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -33,7 +34,8 @@ export default class Dashboard extends Component {
         });
         return (
             <div>
-                <table>
+                <Table>
+                    <thead>
                     <tr>
                         <th>Vorname</th>
                         <th>Nachname</th>
@@ -43,8 +45,11 @@ export default class Dashboard extends Component {
                         <th>Distanz</th>
                         <th>Zeit</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     {rows}
-                </table>
+                    </tbody>
+                </Table>
             </div>
         );
     };
