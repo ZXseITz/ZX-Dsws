@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require("mongoose");
+const formidable = require('formidable');
+const FileReader = require('filereader');
 
 const Athlete = mongoose.model('Athlete', new mongoose.Schema({
     firstname: String,
@@ -81,6 +83,25 @@ router.delete('/:id', (req, res) => {
         } else {
             console.error(err);
             res.status(404).send();
+        }
+    });
+});
+
+router.post('/upload', (req, res) => {
+    const form = new formidable.IncomingForm();
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send();
+        } else {
+            const csv = files.csv;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const text = reader.result;
+                console.log(text);
+                res.status(204).send();
+            };
+            reader.readAsText(csv)
         }
     });
 });
