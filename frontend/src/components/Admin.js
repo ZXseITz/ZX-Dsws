@@ -37,9 +37,10 @@ export default class Admin extends Component {
             method: 'POST',
             body: data
         })
-            .catch(err => console.error(err))
-            .then(res => console.log(res.status));
+            .then(res => console.log(res.status))
+            .catch(err => console.error(err));
         this.handleClose();
+        this.loadAthlete();
     };
 
     componentWillMount = () => this.loadAthlete();
@@ -51,8 +52,7 @@ export default class Admin extends Component {
             rows.push(<tr>
                 <td>{item.firstname}</td>
                 <td>{item.surname}</td>
-                <td>{item.sex}</td>
-                <td>{dateformat(item.dateOfBirth, "dd.mm.yyyy")}</td>
+                <td>{item.year}</td>
                 <td>{item.schoolClass}</td>
                 <td>{item.category}</td>
                 <td>{item.distance}</td>
@@ -85,8 +85,7 @@ export default class Admin extends Component {
                     <tr>
                         <th>Vorname</th>
                         <th>Nachname</th>
-                        <th>Geschlecht</th>
-                        <th>Geburtstag</th>
+                        <th>Jahrgang</th>
                         <th>Klasse</th>
                         <th>Kategorie</th>
                         <th>Distanz</th>

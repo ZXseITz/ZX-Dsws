@@ -8,8 +8,7 @@ const upload = require('../upload');
 const Athlete = mongoose.model('Athlete', new mongoose.Schema({
     firstname: String,
     surname: String,
-    sex: String,
-    dateOfBirth: Date,
+    year: Number,
     schoolClass: String,
     category: String,
     distance: Number,
@@ -99,7 +98,7 @@ router.post('/upload', (req, res) => {
             const csv = files.csv;
             const reader = new FileReader();
             reader.onload = () => {
-                const json = upload.csvToJson(reader.result);
+                const json = upload.register(reader.result);
                 // console.log(json);
                 Athlete.insertMany(json, (err, docs) => {
                     if (err) res.status(500).send();
