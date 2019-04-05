@@ -55,6 +55,7 @@ module.exports = (router, dbs) => {
         });
     });
 
+    //todo authenticate
     router.post('/', (req, res) => {
         const json = req.body;
         dbs.dbAdmin.collection('athlete').insertOne(json, (err, data) => {
@@ -68,6 +69,7 @@ module.exports = (router, dbs) => {
         });
     });
 
+    //todo authenticate
     router.put('/:id', (req, res) => {
         const id = req.params.id;
         dbs.dbAdmin.collection('athlete').updateOne({ _id: id }, json, (err, data) => {
@@ -81,6 +83,7 @@ module.exports = (router, dbs) => {
         });
     });
 
+    //todo authenticate
     router.delete('/:id', (req, res) => {
         const id = req.params.id;
         dbs.dbAdmin.collection('athlete').deleteOne({ _id: id }, (err, data) => {
@@ -94,6 +97,7 @@ module.exports = (router, dbs) => {
         });
     });
 
+    //todo authenticate
     router.post('/upload', (req, res) => {
         const form = new formidable.IncomingForm();
         form.parse(req, (err, fields, files) => {
@@ -120,4 +124,6 @@ module.exports = (router, dbs) => {
             }
         });
     });
+
+    return router;
 };

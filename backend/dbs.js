@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 
-const config = require('config.json');
+const config = require('./config.json');
 
 connect = url => MongoClient.connect(url).then(client => client.db(config['database']));
 

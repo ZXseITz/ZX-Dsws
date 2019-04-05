@@ -1,7 +1,7 @@
 const express = require('express');
 
-const initSchoolClassRouter = require('./routes/schoolClass');
-const initAthleteRouter = require('./routes/athlete');
+const initSchoolClassRouter = require('./schoolClass');
+const initAthleteRouter = require('./athlete');
 
 module.exports = (app, dbs) => {
     const athleteRouter = initAthleteRouter(express.Router(), dbs);
