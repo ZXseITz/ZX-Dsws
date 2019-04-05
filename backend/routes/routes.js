@@ -1,0 +1,14 @@
+const express = require('express');
+
+const initSchoolClassRouter = require('./routes/schoolClass');
+const initAthleteRouter = require('./routes/athlete');
+
+module.exports = (app, dbs) => {
+    const athleteRouter = initAthleteRouter(express.Router(), dbs);
+    const schoolClassRouter = initSchoolClassRouter(express.Router(), dbs);
+
+    app.use('/api/schoolclass', schoolClassRouter);
+    app.use('/api/athlete', athleteRouter);
+
+    return app;
+};
