@@ -1,16 +1,7 @@
+const ObjectID = require('mongodb').ObjectID;
 const formidable = require('formidable');
 const FileReader = require('filereader');
 const upload = require('../upload');
-
-// const Athlete = mongoose.model('Athlete', new mongoose.Schema({
-//     firstname: String,
-//     surname: String,
-//     year: Number,
-//     schoolClass: String,
-//     category: String,
-//     distance: Number,
-//     time: Number,
-// }, {versionKey: false}), 'athlete');
 
 module.exports = (router, dbs) => {
     router.get('/', (req, res) => {
@@ -21,8 +12,8 @@ module.exports = (router, dbs) => {
         if (req.query.surname) {
             q['surname'] = req.query.surname;
         }
-        if (req.query.sex) {
-            q['sex'] = req.query.sex;
+        if (req.query.year) {
+            q['year'] = req.query.year;
         }
         if (req.query.schoolClass) {
             q['schoolClass'] = req.query.schoolClass;
@@ -45,7 +36,8 @@ module.exports = (router, dbs) => {
     });
 
     router.get('/:id', (req, res) => {
-        dbs.db.collection('athlete').findOne({_id: req.params.id}, (err, data) => {
+        const id = req.params.id;
+        dbs.db.collection('athlete').findOne({ _id: new ObjectID(id) }, (err, data) => {
             if (!err) {
                 res.json(data);
             } else {
@@ -60,7 +52,7 @@ module.exports = (router, dbs) => {
         const json = req.body;
         dbs.dbAdmin.collection('athlete').insertOne(json, (err, data) => {
             if (!err) {
-                console.log(`created athlete ${json.firstname} ${json.surname} with id ${data.id}`);
+                console.log(`created athlete ${json.firstname} ${json.surname} with id ${json._id}`);
                 res.status(204).send()
             } else {
                 console.error(`failed creating athlete ${json.firstname} ${json.surname}`);
@@ -72,7 +64,8 @@ module.exports = (router, dbs) => {
     //todo authenticate
     router.put('/:id', (req, res) => {
         const id = req.params.id;
-        dbs.dbAdmin.collection('athlete').updateOne({ _id: id }, json, (err, data) => {
+        const json = req.body;
+        dbs.dbAdmin.collection('athlete').updateOne({ _id: new ObjectID(id) }, {'$set': json}, (err, data) => {
             if (!err) {
                 console.log(`updated athlete ${id}`);
                 res.status(204).send()
@@ -86,7 +79,7 @@ module.exports = (router, dbs) => {
     //todo authenticate
     router.delete('/:id', (req, res) => {
         const id = req.params.id;
-        dbs.dbAdmin.collection('athlete').deleteOne({ _id: id }, (err, data) => {
+        dbs.dbAdmin.collection('athlete').deleteOne({ _id: new ObjectID(id) }, (err, data) => {
             if (!err) {
                 console.log(`deleted athlete ${id}`);
                 res.status(204).send()

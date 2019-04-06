@@ -1,8 +1,3 @@
-// const SchoolClass = mongoose.model('SchoolClass', new mongoose.Schema({
-//     name: String,
-//     teacher: String
-// }, {versionKey: false}), 'classes');
-
 const ObjectID = require('mongodb').ObjectID;
 
 module.exports = (router, dbs) => {
@@ -38,7 +33,7 @@ module.exports = (router, dbs) => {
         const json = req.body;
         dbs.dbAdmin.collection('schoolClass').insertOne(json, (err, data) => {
             if (!err) {
-                console.log(`created school class ${json.name} with id ${data.id}`);
+                console.log(`created school class ${json.name} with id ${json._id}`);
                 res.status(204).send()
             } else {
                 console.error(`failed creating school class ${json.name}`);
