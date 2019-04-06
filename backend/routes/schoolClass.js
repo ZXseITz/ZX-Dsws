@@ -3,6 +3,8 @@
 //     teacher: String
 // }, {versionKey: false}), 'classes');
 
+const ObjectID = require('mongodb').ObjectID;
+
 module.exports = (router, dbs) => {
     router.get('/', (req, res) => {
         const q = {};
@@ -20,7 +22,8 @@ module.exports = (router, dbs) => {
     });
 
     router.get('/:id', (req, res) => {
-        dbs.db.collection('schoolClass').findOne({'_id': req.params.id}, (err, data) => {
+        const id = req.params.id;
+        dbs.db.collection('schoolClass').findOne({'_id': new ObjectID(id)}, (err, data) => {
             if (!err) {
                 res.json(data)
             } else {
@@ -48,7 +51,7 @@ module.exports = (router, dbs) => {
     router.put('/:id', (req, res) => {
         const id = req.params.id;
         const json = req.body;
-        dbs.dbAdmin.collection('schoolClass').updateOne({_id: id}, json, (err, data) => {
+        dbs.dbAdmin.collection('schoolClass').updateOne({_id: new ObjectID(id)}, {'$set': json}, (err, data) => {
             if (!err) {
                 console.log(`updated school class ${id}`);
                 res.status(204).send()
@@ -62,7 +65,7 @@ module.exports = (router, dbs) => {
     //todo authenticate
     router.delete('/:id', (req, res) => {
         const id = req.params.id;
-        dbs.dbAdmin.collection('schoolClass').deleteOne({_id: id}, (err, data) => {
+        dbs.dbAdmin.collection('schoolClass').deleteOne({_id: new ObjectID(id)}, (err, data) => {
             if (!err) {
                 console.log(`deleted school class ${id}`);
                 res.status(204).send()
