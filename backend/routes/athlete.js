@@ -24,8 +24,13 @@ module.exports = (router, dbs) => {
         if (req.query.category) {
             q['category'] = req.query.category;
         }
+        const s = {
+            schoolClass: 1,
+            surname: 1,
+            firstname: 1,
+        };
 
-        dbs.db.collection('athlete').find(q).toArray((err, data) => {
+        dbs.db.collection('athlete').find(q).sort(s).toArray((err, data) => {
             if (!err) {
                 res.json(data);
             } else {
@@ -105,7 +110,7 @@ module.exports = (router, dbs) => {
                     // console.log(json);
                     dbs.dbAdmin.collection('athlete').insertMany(json, (err, data) => {
                         if (!err) {
-                            console.log(`uploaded all athlete ${json}`);
+                            console.log(`uploaded all athlete`);
                             res.status(204).send()
                         } else {
                             console.log(`failed uploading athlete`);

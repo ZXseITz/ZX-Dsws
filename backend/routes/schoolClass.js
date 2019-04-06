@@ -6,7 +6,8 @@ module.exports = (router, dbs) => {
         if (req.query.name) {
             q['name'] = req.query.name;
         }
-        dbs.db.collection('schoolClass').find(q).toArray((err, data) => {
+        const s = { name: 1 }
+        dbs.db.collection('schoolClass').find(q).sort(s).toArray((err, data) => {
             if (!err) {
                 res.json(data)
             } else {
