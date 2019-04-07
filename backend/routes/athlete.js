@@ -24,13 +24,41 @@ module.exports = (router, dbs) => {
         if (req.query.category) {
             q['category'] = req.query.category;
         }
-        const s = {
+
+        dbs.db.collection('athlete').find(q).sort({
             schoolClass: 1,
             surname: 1,
             firstname: 1,
-        };
+        }).toArray((err, data) => {
+            if (!err) {
+                res.json(data);
+            } else {
+                console.error(err);
+                res.status(500).send();
+            }
+        });
+    });
 
-        dbs.db.collection('athlete').find(q).sort(s).toArray((err, data) => {
+    router.get('/grouped', (req, res) => {
+        dbs.db.collection('athlete').aggregate([
+            {
+                $group: {
+                    _id: {
+                        category: '$category',
+                        distance: '$distance',
+                    },
+                    athlete: {
+                        $push: {
+                            firstname: '$firstname',
+                            surname: '$surname',
+                            year: '$year',
+                            schoolClass: '$schoolClass',
+                            time: '$time',
+                        }
+                    }
+                }
+            }
+        ]).toArray((err, data) => {
             if (!err) {
                 res.json(data);
             } else {
@@ -42,7 +70,7 @@ module.exports = (router, dbs) => {
 
     router.get('/:id', (req, res) => {
         const id = req.params.id;
-        dbs.db.collection('athlete').findOne({ _id: new ObjectID(id) }, (err, data) => {
+        dbs.db.collection('athlete').findOne({_id: new ObjectID(id)}, (err, data) => {
             if (!err) {
                 res.json(data);
             } else {
@@ -61,35 +89,6 @@ module.exports = (router, dbs) => {
                 res.status(204).send()
             } else {
                 console.error(`failed creating athlete ${json.firstname} ${json.surname}`);
-                res.status(500).send();
-            }
-        });
-    });
-
-    //todo authenticate
-    router.put('/:id', (req, res) => {
-        const id = req.params.id;
-        const json = req.body;
-        dbs.dbAdmin.collection('athlete').updateOne({ _id: new ObjectID(id) }, {'$set': json}, (err, data) => {
-            if (!err) {
-                console.log(`updated athlete ${id}`);
-                res.status(204).send()
-            } else {
-                console.log(`failed updating athlete ${id}`);
-                res.status(500).send();
-            }
-        });
-    });
-
-    //todo authenticate
-    router.delete('/:id', (req, res) => {
-        const id = req.params.id;
-        dbs.dbAdmin.collection('athlete').deleteOne({ _id: new ObjectID(id) }, (err, data) => {
-            if (!err) {
-                console.log(`deleted athlete ${id}`);
-                res.status(204).send()
-            } else {
-                console.log(`failed deleting athlete ${id}`);
                 res.status(500).send();
             }
         });
@@ -119,6 +118,35 @@ module.exports = (router, dbs) => {
                     })
                 };
                 reader.readAsText(csv)
+            }
+        });
+    });
+
+    //todo authenticate
+    router.put('/:id', (req, res) => {
+        const id = req.params.id;
+        const json = req.body;
+        dbs.dbAdmin.collection('athlete').updateOne({_id: new ObjectID(id)}, {'$set': json}, (err, data) => {
+            if (!err) {
+                console.log(`updated athlete ${id}`);
+                res.status(204).send()
+            } else {
+                console.log(`failed updating athlete ${id}`);
+                res.status(500).send();
+            }
+        });
+    });
+
+    //todo authenticate
+    router.delete('/:id', (req, res) => {
+        const id = req.params.id;
+        dbs.dbAdmin.collection('athlete').deleteOne({_id: new ObjectID(id)}, (err, data) => {
+            if (!err) {
+                console.log(`deleted athlete ${id}`);
+                res.status(204).send()
+            } else {
+                console.log(`failed deleting athlete ${id}`);
+                res.status(500).send();
             }
         });
     });

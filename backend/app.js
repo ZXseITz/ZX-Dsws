@@ -19,5 +19,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 initDatabases().then(dbs => {
     initRoutes(app, dbs).listen(port, () => console.log(`Listening on port ${port}`));
 }).catch(err => {
-    console.error("Webservice could not connect to database");
+    console.error("Webservice failed to start");
 });
