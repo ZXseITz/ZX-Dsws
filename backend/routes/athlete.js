@@ -39,10 +39,12 @@ module.exports = (router, dbs) => {
         });
     });
 
-    router.get('/grouped', (req, res) => {
+    router.get('/ranked', (req, res) => {
         dbs.db.collection('athlete').aggregate([
             {
                 $sort: {
+                    category: 1,
+                    state: 1,
                     time: 1
                 },
             },
@@ -58,6 +60,7 @@ module.exports = (router, dbs) => {
                             surname: '$surname',
                             year: '$year',
                             schoolClass: '$schoolClass',
+                            state: '$state',
                             time: '$time',
                         }
                     }

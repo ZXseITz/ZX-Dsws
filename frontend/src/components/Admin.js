@@ -49,6 +49,21 @@ export default class Admin extends Component {
         // console.log(this.state.athlete);
         const rows = [];
         this.state.athlete.forEach(item => {
+            let state;
+            switch (item.state) {
+                case 0:
+                    state = 'Finished';
+                    break;
+                case 1:
+                    state = 'Pending';
+                    break;
+                case 2:
+                    state = 'DNS';
+                    break;
+                case 3:
+                    state = 'DNF';
+                    break;
+            }
             rows.push(<tr>
                 <td>{item.firstname}</td>
                 <td>{item.surname}</td>
@@ -56,7 +71,8 @@ export default class Admin extends Component {
                 <td>{item.schoolClass}</td>
                 <td>{item.category}</td>
                 <td>{item.distance}</td>
-                <td>0</td>
+                <td>{state}</td>
+                <td>{item.time}</td>
             </tr>)
         });
         return (
@@ -89,6 +105,7 @@ export default class Admin extends Component {
                         <th>Klasse</th>
                         <th>Kategorie</th>
                         <th>Distanz</th>
+                        <th>Status</th>
                         <th>Zeit</th>
                     </tr>
                     </thead>

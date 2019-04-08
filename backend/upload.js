@@ -18,7 +18,8 @@ function register(csv) {
             schoolClass: attr[0].substr(1),
             category: category,
             distance: distance,
-            time: 0,
+            state: 1,
+            time: 0.0
         })
     }
     return list;

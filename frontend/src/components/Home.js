@@ -3,21 +3,21 @@ import {Table} from "react-bootstrap";
 
 export default class Dashboard extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             data: []
         };
         this.load.bind(this);
     }
 
-    load() {
-        fetch('http://localhost:8001/api/athlete/grouped', {
+    load = () => {
+        fetch('http://localhost:8001/api/athlete/ranked', {
             method: 'GET'
         })
             .then(res => res.json())
             .then(data => this.setState({data: data}))
             .catch(err => console.error(err))
-    }
+    };
 
     componentWillMount() {
         this.load();
@@ -27,28 +27,39 @@ export default class Dashboard extends Component {
         const categories = [];
         this.state.data.forEach(item => {
             const rows = [];
+            let pTime = item.athlete[0].time;
             let rank = 1;
-            let athlete = item.athlete[0];
-            let time = athlete.time;
-                rows.push(<tr>
-                <td>{rank}</td>
-                <td>{athlete.firstname}</td>
-                <td>{athlete.surname}</td>
-                <td>{athlete.year}</td>
-                <td>{athlete.schoolClass}</td>
-                <td>{time > 0 ? time : 'n/a'}</td>
-            </tr>);
-            for (let i = 1; i < item.athlete.length; i++) {
-                athlete = item.athlete[i];
-                if (athlete.time > time) rank++;
-                time = athlete.time;
+            let aTime;
+            for (let i = 0; i < item.athlete.length; i++) {
+                const athlete = item.athlete[i];
+                switch (athlete.state) {
+                    case 0:
+                        aTime = athlete.time;
+                        if (athlete.time > pTime) {
+                            rank += 1;
+                            pTime = athlete.time;
+                        }
+                        break;
+                    case 1:
+                        rank = '-';
+                        aTime = '-';
+                        break;
+                    case 2:
+                        rank = '-';
+                        aTime = 'DNS';
+                        break;
+                    case 3:
+                        rank = '-';
+                        aTime = 'DNF';
+                        break;
+                }
                 rows.push(<tr>
                     <td>{rank}</td>
                     <td>{athlete.firstname}</td>
                     <td>{athlete.surname}</td>
                     <td>{athlete.year}</td>
                     <td>{athlete.schoolClass}</td>
-                    <td>{time > 0 ? time : 'n/a'}</td>
+                    <td>{aTime}</td>
                 </tr>);
             }
 
