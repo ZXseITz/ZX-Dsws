@@ -1,5 +1,6 @@
 import React, {Component} from "react"
-import {Table, ListGroup, Container, Row, Col} from "react-bootstrap";
+import {Table, Container, Row, Col, Dropdown} from "react-bootstrap";
+import DropdownMenu from "react-bootstrap/DropdownMenu";
 
 const categories = [
     {
@@ -115,9 +116,9 @@ export default class Dashboard extends Component {
         const cats = [];
         categories.forEach(item => {
             cats.push(
-                <ListGroup.Item onClick={() => {
+                <Dropdown.Item onClick={() => {
                     this.load(item);
-                }} action>{item.name}</ListGroup.Item>
+                }} action>{item.name}</Dropdown.Item>
             )
         });
 
@@ -163,34 +164,30 @@ export default class Dashboard extends Component {
 
         return (
             <div>
-                <Container fluid={true}>
-                    <Row>
-                        <Col sm={2}>
-                            <h3>Kategorien</h3>
-                            <ListGroup>
-                                {cats}
-                            </ListGroup>
-                        </Col>
-                        <Col sm={10}>
-                            <h3>{category.name}, {category.distance}m</h3>
-                            <Table>
-                                <thead>
-                                <tr>
-                                    <th>Rang</th>
-                                    <th>Vorname</th>
-                                    <th>Nachname</th>
-                                    <th>Jahrgang</th>
-                                    <th>Klasse</th>
-                                    <th>Zeit</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {rows}
-                                </tbody>
-                            </Table>
-                        </Col>
-                    </Row>
-                </Container>
+
+                <Dropdown>
+                    <Dropdown.Toggle variant="success">
+                        {category.name}, {category.distance}m
+                    </Dropdown.Toggle>
+                    <DropdownMenu>
+                        {cats}
+                    </DropdownMenu>
+                </Dropdown>
+                <Table>
+                    <thead>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Vorname</th>
+                        <th>Nachname</th>
+                        <th>Jahrgang</th>
+                        <th>Klasse</th>
+                        <th>Zeit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {rows}
+                    </tbody>
+                </Table>
             </div>
         );
     };
