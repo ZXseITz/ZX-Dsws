@@ -1,6 +1,7 @@
 import React, {Component} from "react"
 import {Table, Container, Row, Col, Dropdown} from "react-bootstrap";
 import DropdownMenu from "react-bootstrap/DropdownMenu";
+import config from "../config.json"
 
 const categories = [
     {
@@ -90,7 +91,7 @@ export default class Dashboard extends Component {
         super(props);
         this.state = {
             category: {},
-            data: []
+            data: [],
         };
         this.load.bind(this);
     }
@@ -101,7 +102,7 @@ export default class Dashboard extends Component {
 
     load = (category) => {
         console.log('loading data');
-        fetch(`http://localhost:8001/api/athlete/ranked/${category.name}`, {
+        fetch(`http://${config.host}/api/athlete/ranked/${category.name}`, {
             method: 'GET'
         })
             .then(res => res.json())

@@ -1,6 +1,6 @@
 import React, {Component} from "react"
 import {Button, Modal, Form, Table} from "react-bootstrap"
-import dateformat from "dateformat"
+import config from "../config.json"
 
 export default class Admin extends Component {
     constructor(props) {
@@ -33,7 +33,7 @@ export default class Admin extends Component {
         const file = document.getElementById('input').files[0];
         const data = new FormData();
         data.append('csv', file);
-        fetch('http://localhost:8001/api/athlete/upload', {
+        fetch(`http://${config}/api/athlete/upload`, {
             method: 'POST',
             body: data
         })
