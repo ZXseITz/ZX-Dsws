@@ -42,6 +42,11 @@ module.exports = (router, dbs) => {
     router.get('/grouped', (req, res) => {
         dbs.db.collection('athlete').aggregate([
             {
+                $sort: {
+                    time: 1
+                },
+            },
+            {
                 $group: {
                     _id: {
                         category: '$category',
