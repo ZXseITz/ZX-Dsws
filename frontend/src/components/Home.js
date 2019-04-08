@@ -1,43 +1,140 @@
 import React, {Component} from "react"
-import {Table} from "react-bootstrap";
+import {Table, ListGroup, Container, Row, Col} from "react-bootstrap";
+
+const categories = [
+    {
+        name: "W7",
+        distance: 50
+    },
+    {
+        name: "M7",
+        distance: 50
+    },
+    {
+        name: "W8",
+        distance: 50
+    },
+    {
+        name: "M8",
+        distance: 50
+    },
+    {
+        name: "W9",
+        distance: 50
+    },
+    {
+        name: "M9",
+        distance: 50
+    },
+    {
+        name: "W10",
+        distance: 60
+    },
+    {
+        name: "M10",
+        distance: 60
+    },
+    {
+        name: "W11",
+        distance: 60
+    },
+    {
+        name: "M11",
+        distance: 60
+    },
+    {
+        name: "W12",
+        distance: 60
+    },
+    {
+        name: "M12",
+        distance: 60
+    },
+    {
+        name: "W13",
+        distance: 60
+    },
+    {
+        name: "M13",
+        distance: 60
+    },
+    {
+        name: "W14",
+        distance: 80
+    },
+    {
+        name: "M14",
+        distance: 80
+    },
+    {
+        name: "W15",
+        distance: 80
+    },
+    {
+        name: "M15",
+        distance: 80
+    },
+    {
+        name: "W16",
+        distance: 80
+    },
+    {
+        name: "M16",
+        distance: 80
+    },
+];
 
 export default class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            category: {},
             data: []
         };
         this.load.bind(this);
     }
 
-    load = () => {
-        fetch('http://localhost:8001/api/athlete/ranked', {
+    componentWillMount() {
+        this.load(categories[0]);
+    }
+
+    load = (category) => {
+        console.log('loading data');
+        fetch(`http://localhost:8001/api/athlete/ranked/${category.name}`, {
             method: 'GET'
         })
             .then(res => res.json())
-            .then(data => this.setState({data: data}))
+            .then(data => this.setState({
+                category: category,
+                data: data
+            }))
             .catch(err => console.error(err))
     };
 
-    componentWillMount() {
-        this.load();
-    }
-
     render() {
-        const categories = [];
-        this.state.data.forEach(item => {
-            const rows = [];
-            let pTime = item.athlete[0].time;
+        const cats = [];
+        categories.forEach(item => {
+            cats.push(
+                <ListGroup.Item onClick={() => {
+                    this.load(item);
+                }} action>{item.name}</ListGroup.Item>
+            )
+        });
+
+        const data = this.state.data;
+        const category = this.state.category;
+        const rows = [];
+        if (data.length > 0) {
+            let pTime = data[0].time;
             let rank = 1;
             let aTime;
-            for (let i = 0; i < item.athlete.length; i++) {
-                const athlete = item.athlete[i];
-                switch (athlete.state) {
+            data.forEach(item => {
+                switch (item.state) {
                     case 0:
-                        aTime = athlete.time;
-                        if (athlete.time > pTime) {
+                        aTime = item.time;
+                        if (item.time > pTime) {
                             rank += 1;
-                            pTime = athlete.time;
+                            pTime = item.time;
                         }
                         break;
                     case 1:
@@ -55,40 +152,45 @@ export default class Dashboard extends Component {
                 }
                 rows.push(<tr>
                     <td>{rank}</td>
-                    <td>{athlete.firstname}</td>
-                    <td>{athlete.surname}</td>
-                    <td>{athlete.year}</td>
-                    <td>{athlete.schoolClass}</td>
+                    <td>{item.firstname}</td>
+                    <td>{item.surname}</td>
+                    <td>{item.year}</td>
+                    <td>{item.schoolClass}</td>
                     <td>{aTime}</td>
                 </tr>);
-            }
-
-            categories.push(
-                <div>
-                    <h3>{item._id.category}, {item._id.distance}m</h3>
-                    <Table>
-                        <thead>
-                        <tr>
-                            <th>Rang</th>
-                            <th>Vorname</th>
-                            <th>Nachname</th>
-                            <th>Jahrgang</th>
-                            <th>Klasse</th>
-                            <th>Zeit</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {rows}
-                        </tbody>
-                    </Table>
-                    <br />
-                </div>
-            );
-        });
+            });
+        }
 
         return (
             <div>
-                {categories}
+                <Container fluid={true}>
+                    <Row>
+                        <Col sm={2}>
+                            <h3>Kategorien</h3>
+                            <ListGroup>
+                                {cats}
+                            </ListGroup>
+                        </Col>
+                        <Col sm={10}>
+                            <h3>{category.name}, {category.distance}m</h3>
+                            <Table>
+                                <thead>
+                                <tr>
+                                    <th>Rang</th>
+                                    <th>Vorname</th>
+                                    <th>Nachname</th>
+                                    <th>Jahrgang</th>
+                                    <th>Klasse</th>
+                                    <th>Zeit</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {rows}
+                                </tbody>
+                            </Table>
+                        </Col>
+                    </Row>
+                </Container>
             </div>
         );
     };

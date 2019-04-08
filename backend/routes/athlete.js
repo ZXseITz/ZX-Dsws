@@ -39,34 +39,12 @@ module.exports = (router, dbs) => {
         });
     });
 
-    router.get('/ranked', (req, res) => {
-        dbs.db.collection('athlete').aggregate([
-            {
-                $sort: {
-                    category: 1,
-                    state: 1,
-                    time: 1
-                },
-            },
-            {
-                $group: {
-                    _id: {
-                        category: '$category',
-                        distance: '$distance',
-                    },
-                    athlete: {
-                        $push: {
-                            firstname: '$firstname',
-                            surname: '$surname',
-                            year: '$year',
-                            schoolClass: '$schoolClass',
-                            state: '$state',
-                            time: '$time',
-                        }
-                    }
-                }
-            }
-        ]).toArray((err, data) => {
+    router.get('/ranked/:category', (req, res) => {
+        const q = {category: req.params.category};
+        dbs.db.collection('athlete').find(q).sort({
+            state: 1,
+            time: 1,
+        }).toArray((err, data) => {
             if (!err) {
                 res.json(data);
             } else {
