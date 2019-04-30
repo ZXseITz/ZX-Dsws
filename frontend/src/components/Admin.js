@@ -15,6 +15,8 @@ export default class Admin extends Component {
         this.updateAthlete.bind(this);
         this.handleUploadClose.bind(this);
         this.handleUploadShow.bind(this);
+        this.handleUpdateClose.bind(this);
+        this.handleUpdateShow.bind(this);
         this.uploadFile.bind(this);
     };
 
