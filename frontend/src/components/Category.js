@@ -5,14 +5,8 @@ import config from "../config.json"
 export default class Category extends Component {
     constructor(props) {
         super(props);
-        this.refs = {
-            formName: React.createRef(),
-            formYear: React.createRef(),
-            formSex: React.createRef(),
-            formDistance: React.createRef(),
-        };
         this.state = {
-            updateItem: null,
+            updateItem: {},
             categories: []
         };
 
@@ -24,6 +18,11 @@ export default class Category extends Component {
         this.createCategory.bind(this);
         this.updateCategory.bind(this);
         this.deleteCategory.bind(this);
+
+        this.onNameChange.bind(this);
+        this.onYearChange.bind(this);
+        this.onSexChange.bind(this);
+        this.onDistanceChange.bind(this);
     };
 
     loadCategories = () => {
@@ -50,10 +49,10 @@ export default class Category extends Component {
     updateCategory = () => {
         const id = this.state.updateItem._id;
         const item = {
-            name: this.refs.formName,
-            year: this.refs.formYear,
-            sex: this.refs.formSex,
-            distance: this.refs.formDistance,
+            name: this.state.updateItem.name,
+            year: this.state.updateItem.year,
+            sex: this.state.updateItem.sex,
+            distance: this.state.updateItem.distance,
         };
         console.log(item);
         fetch(`http://${config.host}/api/categories/${id}`, {
@@ -76,11 +75,35 @@ export default class Category extends Component {
             .catch(err => console.error(err))
     };
 
-    handleUpdateClose = () => this.setState({updateItem: null});
+    handleUpdateClose = () => this.setState({updateItem: {}});
 
     handleUpdateShow = (item) => this.setState({updateItem: item});
 
     componentWillMount = () => this.loadCategories();
+
+    onNameChange = event => {
+        const state = this.state;
+        state.updateItem.name = event.target.value;
+        this.setState(state);
+    };
+
+    onYearChange = event => {
+        const state = this.state;
+        state.updateItem.year = event.target.value;
+        this.setState(state);
+    };
+
+    onSexChange = event => {
+        const state = this.state;
+        state.updateItem.sex = event.target.value;
+        this.setState(state);
+    };
+
+    onDistanceChange = event => {
+        const state = this.state;
+        state.updateItem.distance = event.target.value;
+        this.setState(state);
+    };
 
     render() {
         const updateItem = this.state.updateItem;
@@ -97,34 +120,30 @@ export default class Category extends Component {
         });
         return (
             <div>
-                <Modal show={updateItem !== null} onHide={this.handleUpdateClose}>
+                <Modal show={updateItem.hasOwnProperty('_id')} onHide={() => this.handleUpdateClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Update {updateItem != null ? updateItem._id : ''}</Modal.Title>
+                        <Modal.Title>Update {updateItem._id}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form>
                             <Form.Group as={Row} controlId='formName'>
                                 <Form.Label>Name</Form.Label>
-                                <Form.Control type='text'
-                                              defaultValue={updateItem !== null ? updateItem.name : ''}/>
+                                <Form.Control type='text' onChange={this.onNameChange} defaultValue={updateItem.name}/>
                             </Form.Group>
                             <Form.Group as={Row} controlId='formYear'>
                                 <Form.Label>Jahr</Form.Label>
-                                <Form.Control type='text' defaultValue={updateItem !== null ? updateItem.year : ''}/>
+                                <Form.Control type='text' onChange={this.onYearChange} defaultValue={updateItem.year}/>
                             </Form.Group>
                             <Form.Group as={Row} controlId='formSex'>
                                 <Form.Label>Gechlecht</Form.Label>
-                                <Form.Control as="select"
-                                              defaultValue={updateItem !== null ? updateItem.sex : ''}
-                                >
+                                <Form.Control as="select" onChange={this.onSexChange} defaultValue={updateItem.sex} >
                                     <option>m</option>
                                     <option>w</option>
                                 </Form.Control>
                             </Form.Group>
                             <Form.Group as={Row} controlId='formDistance'>
                                 <Form.Label>Distanz</Form.Label>
-                                <Form.Control type='text'
-                                              defaultValue={updateItem !== null ? updateItem.distance : ''}/>
+                                <Form.Control type='text' onChange={this.onDistanceChange} defaultValue={updateItem.distance}/>
                             </Form.Group>
                         </Form>
                     </Modal.Body>
