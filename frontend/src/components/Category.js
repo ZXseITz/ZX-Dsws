@@ -19,10 +19,7 @@ export default class Category extends Component {
         this.updateCategory.bind(this);
         this.deleteCategory.bind(this);
 
-        this.onNameChange.bind(this);
-        this.onYearChange.bind(this);
-        this.onSexChange.bind(this);
-        this.onDistanceChange.bind(this);
+        this.onChange.bind(this);
     };
 
     loadCategories = () => {
@@ -81,27 +78,9 @@ export default class Category extends Component {
 
     componentWillMount = () => this.loadCategories();
 
-    onNameChange = event => {
+    onChange = (event, prop) => {
         const state = this.state;
-        state.updateItem.name = event.target.value;
-        this.setState(state);
-    };
-
-    onYearChange = event => {
-        const state = this.state;
-        state.updateItem.year = event.target.value;
-        this.setState(state);
-    };
-
-    onSexChange = event => {
-        const state = this.state;
-        state.updateItem.sex = event.target.value;
-        this.setState(state);
-    };
-
-    onDistanceChange = event => {
-        const state = this.state;
-        state.updateItem.distance = event.target.value;
+        state.updateItem[prop] = event.target.value;
         this.setState(state);
     };
 
@@ -128,22 +107,22 @@ export default class Category extends Component {
                         <Form>
                             <Form.Group as={Row} controlId='formName'>
                                 <Form.Label>Name</Form.Label>
-                                <Form.Control type='text' onChange={this.onNameChange} defaultValue={updateItem.name}/>
+                                <Form.Control type='text' onChange={event => this.onChange(event, 'name')} defaultValue={updateItem.name}/>
                             </Form.Group>
                             <Form.Group as={Row} controlId='formYear'>
                                 <Form.Label>Jahr</Form.Label>
-                                <Form.Control type='text' onChange={this.onYearChange} defaultValue={updateItem.year}/>
+                                <Form.Control type='text' onChange={event => this.onChange(event, 'year')} defaultValue={updateItem.year}/>
                             </Form.Group>
                             <Form.Group as={Row} controlId='formSex'>
                                 <Form.Label>Gechlecht</Form.Label>
-                                <Form.Control as="select" onChange={this.onSexChange} defaultValue={updateItem.sex} >
+                                <Form.Control as="select" onChange={event => this.onChange(event, 'sex')} defaultValue={updateItem.sex} >
                                     <option>m</option>
                                     <option>w</option>
                                 </Form.Control>
                             </Form.Group>
                             <Form.Group as={Row} controlId='formDistance'>
                                 <Form.Label>Distanz</Form.Label>
-                                <Form.Control type='text' onChange={this.onDistanceChange} defaultValue={updateItem.distance}/>
+                                <Form.Control type='text' onChange={event => this.onChange(event, 'distance')} defaultValue={updateItem.distance}/>
                             </Form.Group>
                         </Form>
                     </Modal.Body>
