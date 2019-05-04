@@ -1,12 +1,13 @@
 import React, {Component} from "react"
 import {Button, Modal, Form, Table, Row} from "react-bootstrap"
+import CategoryModel from "./CategoryModel"
 import config from "../config.json"
 
 export default class Category extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            updateItem: {},
+            model: {},
             categories: []
         };
 
@@ -18,8 +19,6 @@ export default class Category extends Component {
         this.createCategory.bind(this);
         this.updateCategory.bind(this);
         this.deleteCategory.bind(this);
-
-        this.onChange.bind(this);
     };
 
     loadCategories = () => {
@@ -44,14 +43,13 @@ export default class Category extends Component {
     };
 
     updateCategory = () => {
-        const id = this.state.updateItem._id;
+        const id = this.state.model._id;
         const item = {
-            name: this.state.updateItem.name,
-            year: this.state.updateItem.year,
-            sex: this.state.updateItem.sex,
-            distance: this.state.updateItem.distance,
+            name: this.state.model.name,
+            year: this.state.model.year,
+            sex: this.state.model.sex,
+            distance: this.state.model.distance,
         };
-        console.log(item);
         fetch(`http://${config.host}/api/categories/${id}`, {
             method: 'PUT',
             headers: {
@@ -64,7 +62,7 @@ export default class Category extends Component {
     };
 
     deleteCategory = () => {
-        const id = this.state.updateItem._id;
+        const id = this.state.model._id;
         fetch(`http://${config.host}/api/categories/${id}`, {
             method: 'DELETE'
         })
@@ -72,20 +70,14 @@ export default class Category extends Component {
             .catch(err => console.error(err))
     };
 
-    handleUpdateClose = () => this.setState({updateItem: {}});
+    handleUpdateClose = () => this.setState({model: {}});
 
-    handleUpdateShow = (item) => this.setState({updateItem: item});
+    handleUpdateShow = (item) => this.setState({model: item});
 
     componentWillMount = () => this.loadCategories();
 
-    onChange = (event, prop) => {
-        const state = this.state;
-        state.updateItem[prop] = event.target.value;
-        this.setState(state);
-    };
-
     render() {
-        const updateItem = this.state.updateItem;
+        const model = this.state.model;
         const rows = [];
         this.state.categories.forEach(item => {
             rows.push(<tr key={item._id} onClick={() => {
@@ -99,32 +91,12 @@ export default class Category extends Component {
         });
         return (
             <div>
-                <Modal show={updateItem.hasOwnProperty('_id')} onHide={() => this.handleUpdateClose}>
+                <Modal show={Object.entries(model).length > 0} onHide={() => this.handleUpdateClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Update {updateItem._id}</Modal.Title>
+                        <Modal.Title>Update {model._id}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form>
-                            <Form.Group as={Row} controlId='formName'>
-                                <Form.Label>Name</Form.Label>
-                                <Form.Control type='text' onChange={event => this.onChange(event, 'name')} defaultValue={updateItem.name}/>
-                            </Form.Group>
-                            <Form.Group as={Row} controlId='formYear'>
-                                <Form.Label>Jahr</Form.Label>
-                                <Form.Control type='text' onChange={event => this.onChange(event, 'year')} defaultValue={updateItem.year}/>
-                            </Form.Group>
-                            <Form.Group as={Row} controlId='formSex'>
-                                <Form.Label>Gechlecht</Form.Label>
-                                <Form.Control as="select" onChange={event => this.onChange(event, 'sex')} defaultValue={updateItem.sex} >
-                                    <option>m</option>
-                                    <option>w</option>
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group as={Row} controlId='formDistance'>
-                                <Form.Label>Distanz</Form.Label>
-                                <Form.Control type='text' onChange={event => this.onChange(event, 'distance')} defaultValue={updateItem.distance}/>
-                            </Form.Group>
-                        </Form>
+                        <CategoryModel model={model} />
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => this.handleUpdateClose()}>
