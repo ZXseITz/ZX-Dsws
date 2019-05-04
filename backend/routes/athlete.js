@@ -40,12 +40,57 @@ module.exports = (router, dbs) => {
         });
     });
 
-    router.get('/ranked/:category', (req, res) => {
+    router.get('/ranked/', (req, res) => {
         const q = {category: req.params.category};
-        dbs.db.collection('athlete').find(q).sort({
-            state: 1,
-            time: 1,
-        }).toArray((err, data) => {
+        dbs.db.collection('athlete').aggregate([
+            {
+                $sort: {
+                    state: 1,
+                    time: 1,
+                }
+            },
+            {
+                $group: {
+                    _id: '$category',
+                    athlete: {
+                        $push: {
+                            number: '$number',
+                            firstname: '$firstname',
+                            surname: '$surname',
+                            year: '$year',
+                            schoolClass: '$schoolClass',
+                            state: '$state',
+                            time: '$time',
+                        }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: 'name',
+                    as: 'category'
+                }
+            },
+            {
+                $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$category", 0 ] }, "$$ROOT" ] } }
+            },
+            {
+                $sort: {
+                    year: 1,
+                    sex: 1,
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    year: 0,
+                    sex: 0,
+                    category: 0
+                }
+            }
+        ]).toArray((err, data) => {
             if (!err) {
                 res.json(data);
             } else {
