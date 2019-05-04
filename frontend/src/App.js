@@ -4,7 +4,7 @@ import './App.css';
 import Navigation from "./components/Navigation"
 import Home from "./components/Home"
 import Category from "./components/Category";
-import Admin from "./components/Admin";
+import Athlete from "./components/Athlete";
 import Error from "./components/Error"
 
 class App extends Component {
@@ -17,7 +17,7 @@ class App extends Component {
             <Switch>
               <Route exact path="/" component={Home}/>
               <Route path="/category" component={Category}/>
-              <Route path="/admin" component={Admin}/>
+              <Route path="/athlete" component={Athlete}/>
               <Route component={Error}/>
             </Switch>
           </div>

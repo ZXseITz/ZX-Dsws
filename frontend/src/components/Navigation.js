@@ -11,7 +11,7 @@ export default class Navigation extends Component {
                     <Nav className="mr-auto">
                         <Nav.Link href="/">Home</Nav.Link>
                         <Nav.Link href="category">Category</Nav.Link>
-                        <Nav.Link href="admin">Admin</Nav.Link>
+                        <Nav.Link href="athlete">Athlete</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

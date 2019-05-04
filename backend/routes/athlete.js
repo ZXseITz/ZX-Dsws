@@ -6,6 +6,9 @@ const upload = require('../upload');
 module.exports = (router, dbs) => {
     router.get('/', (req, res) => {
         const q = {};
+        if (req.query.number) {
+            q['number'] = req.query.number;
+        }
         if (req.query.firstname) {
             q['firstname'] = req.query.firstname;
         }
@@ -26,9 +29,7 @@ module.exports = (router, dbs) => {
         }
 
         dbs.db.collection('athlete').find(q).sort({
-            schoolClass: 1,
-            surname: 1,
-            firstname: 1,
+            number: 1
         }).toArray((err, data) => {
             if (!err) {
                 res.json(data);
