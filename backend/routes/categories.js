@@ -2,7 +2,19 @@ const ObjectID = require('mongodb').ObjectID;
 
 module.exports = (router, dbs) => {
     router.get('/', (req, res) => {
-        dbs.db.collection('categories').find({}).sort({
+        const query = {};
+        if (req.query.hasOwnProperty('name')) {
+            query['name'] = req.query.name
+        }
+        if (req.query.hasOwnProperty('year')) {
+            query['year'] = req.query.year
+        }
+        if (req.query.hasOwnProperty('sex')) {
+            query['sex'] = req.query.sex
+        }
+        dbs.db.collection('categories').find(query).sort({
+            year: 1,
+            sex: 1
         }).toArray((err, data) => {
             if (!err) {
                 res.json(data);

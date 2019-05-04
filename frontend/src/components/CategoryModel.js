@@ -6,21 +6,22 @@ export default class CategoryModel extends Component {
         super(props);
         this.model = props.model;
         this.onChange.bind(this);
+        this.onChangeInt.bind(this);
     }
 
     onChange = (event, prop) => {
         this.model[prop] = event.target.value;
     };
 
+    onChangeInt = (event, prop) => {
+        this.model[prop] = parseInt(event.target.value);
+    };
+
     render() {
         return <Form>
-            <Form.Group as={Row} controlId='formName'>
-                <Form.Label>Name</Form.Label>
-                <Form.Control type='text' onChange={event => this.onChange(event, 'name')} defaultValue={this.model.name}/>
-            </Form.Group>
             <Form.Group as={Row} controlId='formYear'>
                 <Form.Label>Jahr</Form.Label>
-                <Form.Control type='text' onChange={event => this.onChange(event, 'year')} defaultValue={this.model.year}/>
+                <Form.Control type='text' onChange={event => this.onChangeInt(event, 'year')} defaultValue={this.model.year}/>
             </Form.Group>
             <Form.Group as={Row} controlId='formSex'>
                 <Form.Label>Gechlecht</Form.Label>
@@ -31,7 +32,7 @@ export default class CategoryModel extends Component {
             </Form.Group>
             <Form.Group as={Row} controlId='formDistance'>
                 <Form.Label>Distanz</Form.Label>
-                <Form.Control type='text' onChange={event => this.onChange(event, 'distance')} defaultValue={this.model.distance}/>
+                <Form.Control type='text' onChange={event => this.onChangeInt(event, 'distance')} defaultValue={this.model.distance}/>
             </Form.Group>
         </Form>;
     }

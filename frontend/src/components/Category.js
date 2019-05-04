@@ -8,14 +8,11 @@ export default class Category extends Component {
         super(props);
         this.state = {
             model: {},
+            newModel: {},
             categories: []
         };
 
         this.loadCategories.bind(this);
-
-        this.handleUpdateClose.bind(this);
-        this.handleUpdateShow.bind(this);
-
         this.createCategory.bind(this);
         this.updateCategory.bind(this);
         this.deleteCategory.bind(this);
@@ -30,34 +27,40 @@ export default class Category extends Component {
             .catch(err => console.error(err))
     };
 
+    stringifyCategory = model => {
+        // exclude _id
+        return JSON.stringify({
+            name: `${model.sex}${model.year}`,
+            year: model.year,
+            sex: model.sex,
+            distance: model.distance,
+        });
+    };
+
     createCategory = () => {
         fetch(`http://${config.host}/api/categories`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({})
+            body: this.stringifyCategory(this.state.newModel)
         })
             .then(() => console.log(`created category successfully`))
+            .then(() => this.loadCategories())
             .catch(err => console.error(err))
     };
 
     updateCategory = () => {
         const id = this.state.model._id;
-        const item = {
-            name: this.state.model.name,
-            year: this.state.model.year,
-            sex: this.state.model.sex,
-            distance: this.state.model.distance,
-        };
         fetch(`http://${config.host}/api/categories/${id}`, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(item)
+            body: this.stringifyCategory(this.state.model)
         })
             .then(() => console.log(`updated category ${id} successfully`))
+            .then(() => this.loadCategories())
             .catch(err => console.error(err))
     };
 
@@ -67,21 +70,21 @@ export default class Category extends Component {
             method: 'DELETE'
         })
             .then(() => console.log(`deleted category ${id} successfully`))
+            .then(() => this.loadCategories())
             .catch(err => console.error(err))
     };
-
-    handleUpdateClose = () => this.setState({model: {}});
-
-    handleUpdateShow = (item) => this.setState({model: item});
 
     componentWillMount = () => this.loadCategories();
 
     render() {
         const model = this.state.model;
+        const newModel = this.state.newModel;
         const rows = [];
         this.state.categories.forEach(item => {
             rows.push(<tr key={item._id} onClick={() => {
-                this.handleUpdateShow(item);
+                this.setState({
+                    model: item
+                });
             }}>
                 <td>{item.name}</td>
                 <td>{item.year}</td>
@@ -91,33 +94,60 @@ export default class Category extends Component {
         });
         return (
             <div>
-                <Modal show={Object.entries(model).length > 0} onHide={() => this.handleUpdateClose}>
+                {/*Create*/}
+                <Modal show={Object.entries(newModel).length > 0} onHide={() => this.setState({newModel: {}})}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Update {model._id}</Modal.Title>
+                        <Modal.Title>Create new category</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <CategoryModel model={newModel} />
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => this.setState({newModel: {}})}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={() => {
+                            this.createCategory();
+                            this.setState({newModel: {}})
+                        }}>
+                            Create
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                {/*Update / Delete*/}
+                <Modal show={Object.entries(model).length > 0} onHide={() => this.setState({model: {}})}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Update category {model.name}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <CategoryModel model={model} />
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => this.handleUpdateClose()}>
+                        <Button variant="secondary" onClick={() => this.setState({model: {}})}>
                             Close
                         </Button>
                         <Button variant="danger" onClick={() => {
                             this.deleteCategory();
-                            this.handleUpdateClose();
+                            this.setState({model: {}})
                         }}>
                             Delete
                         </Button>
                         <Button variant="primary" onClick={() => {
                             this.updateCategory();
-                            this.handleUpdateClose();
+                            this.setState({model: {}})
                         }}>
                             Update
                         </Button>
                     </Modal.Footer>
                 </Modal>
 
-                <Button variant="outline-primary" onClick={() => this.createCategory()} >Hinzufügen</Button>
+                <Button variant="outline-primary" onClick={() => this.setState({
+                    newModel: {
+                        year: 7,
+                        sex: 'm',
+                        distance: 50
+                    }
+                })} >Hinzufügen</Button>
 
                 <Table bordered hover>
                     <thead>
