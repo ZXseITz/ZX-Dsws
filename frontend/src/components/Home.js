@@ -1,6 +1,6 @@
 import React, {Component} from "react"
-import {Table, Dropdown} from "react-bootstrap";
-import DropdownMenu from "react-bootstrap/DropdownMenu";
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.js';
 import config from "../config.json"
 
 
@@ -28,9 +28,9 @@ export default class Dashboard extends Component {
         const data = this.state.data;
         const items = [];
         data.forEach((item, i) => {
-            items.push(<Dropdown.Item key={item.name} onClick={() => this.setState({idx: i})}>
+            items.push(<a key={item.name} className="dropdown-item" onClick={() => this.setState({idx: i})}>
                     {item.name}, {item.distance}m
-                </Dropdown.Item>)
+                </a>)
         });
         let title = '';
         const rows = [];
@@ -62,7 +62,7 @@ export default class Dashboard extends Component {
                             aTime = 'DNF';
                             break;
                     }
-                    rows.push(<tr>
+                    rows.push(<tr key={item.number}>
                         <td>{rank}</td>
                         <td>{item.firstname}</td>
                         <td>{item.surname}</td>
@@ -75,15 +75,16 @@ export default class Dashboard extends Component {
 
         return (
             <div>
-                <Dropdown>
-                    <Dropdown.Toggle variant="success" id='categories'>
+                <div className="dropdown">
+                    <button className="btn btn-primary dropdown-toggle" id="dropdownMenuButton" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
                         {title}
-                    </Dropdown.Toggle>
-                    <DropdownMenu>
+                    </button>
+                    <div className="dropdown-menu">
                         {items}
-                    </DropdownMenu>
-                </Dropdown>
-                <Table>
+                    </div>
+                </div>
+                <table className="table">
                     <thead>
                     <tr>
                         <th>Rang</th>
@@ -97,7 +98,7 @@ export default class Dashboard extends Component {
                     <tbody>
                     {rows}
                     </tbody>
-                </Table>
+                </table>
             </div>
         );
     };
