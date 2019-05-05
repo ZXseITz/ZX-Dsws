@@ -1,6 +1,7 @@
 import React, {Component} from "react"
-import {Button, Table} from "react-bootstrap";
 import config from "../config";
+import 'bootstrap/dist/css/bootstrap.css';
+import './Run.css'
 
 export default class Run extends Component {
     constructor(props) {
@@ -45,32 +46,37 @@ export default class Run extends Component {
                     <td>{a.category}</td>
                 </tr>)
             });
-            items.push(<div>
-                <h3>Block: {item._id.block}</h3>
-                <h4>Distanz: {item._id.distance}</h4>
-                <h4>Startzeit: {item._id.startTime}</h4>
-                <br/>
-                <Table bordered hover>
-                    <thead>
-                    <tr>
-                        <th>Startnummer</th>
-                        <th>Vorname</th>
-                        <th>Nachname</th>
-                        <th>Jahrgang</th>
-                        <th>Klasse</th>
-                        <th>Kategorie</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {rows}
-                    </tbody>
-                </Table>
+            items.push(<div className='row block'>
+                <div className='col-4 block-title'>
+                    <h4>Block: {item._id.block}</h4>
+                    <p>Distanz: {item._id.distance}m</p>
+                    <p>Startzeit: {item._id.startTime}</p>
+                </div>
+                <div className='col-8'>
+                    <table className="table">
+                        {/*<thead>*/}
+                        {/*<tr>*/}
+                        {/*    <th>Startnummer</th>*/}
+                        {/*    <th>Vorname</th>*/}
+                        {/*    <th>Nachname</th>*/}
+                        {/*    <th>Jahrgang</th>*/}
+                        {/*    <th>Klasse</th>*/}
+                        {/*    <th>Kategorie</th>*/}
+                        {/*</tr>*/}
+                        {/*</thead>*/}
+                        <tbody>
+                        {rows}
+                        </tbody>
+                    </table>
+                </div>
             </div>)
         });
 
         return <div>
-            <Button variant="outline-primary" onClick={this.createRunOder}>Create Run Order</Button>
-            {items}
+            <button type="button" className="btn btn-primary" onClick={this.createRunOder}>Create Run Order</button>
+            <div className='container'>
+                {items}
+            </div>
         </div>;
     };
 }

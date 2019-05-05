@@ -1,0 +1,9 @@
+.block {
+    border: 1px solid darkgreen;
+    margin-top: 1cm;
+}
+
+.block-title {
+    text-align: left;
+    padding: 0.5cm 0.5cm;
+}
