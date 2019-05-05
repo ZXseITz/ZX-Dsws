@@ -1,15 +1,13 @@
 import React, {Component} from "react"
-import {Button, Modal, Form, Table} from "react-bootstrap"
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.js';
 import config from "../config.json"
-import AthleteModel from "./AthleteModel";
+import $ from "jquery";
 
 export default class Athlete extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showUploadModal: false,
-            model: {},
-            newModel: {},
             athlete: []
         };
 
@@ -21,7 +19,7 @@ export default class Athlete extends Component {
     };
 
     uploadFile = () => {
-        const file = document.getElementById('input').files[0];
+        const file = $('#upload').prop('files')[0];
         const data = new FormData();
         data.append('csv', file);
         fetch(`http://${config.host}/api/upload`, {
@@ -30,20 +28,6 @@ export default class Athlete extends Component {
         })
             .then(res => console.log(res.status))
             .catch(err => console.error(err));
-    };
-
-    stringifyAthlete = model => {
-        // exclude _id
-        return JSON.stringify({
-            number: model.number,
-            firstname: model.firstname,
-            surname: model.surname,
-            year: model.year,
-            schoolClass: model.schoolClass,
-            category: model.category,
-            state: model.state,
-            time: model.time,
-        });
     };
 
     loadAthlete = () => {
@@ -55,14 +39,13 @@ export default class Athlete extends Component {
             .catch(err => console.error(err))
     };
 
-
-    createAthlete = () => {
+    createAthlete = (athlete) => {
         fetch(`http://${config.host}/api/athlete`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: this.stringifyAthlete(this.state.newModel)
+            body: JSON.stringify(athlete)
         })
             .then(() => console.log(`crated athlete successfully`))
             .then(() => this.setState({newModel: {}}))
@@ -70,14 +53,13 @@ export default class Athlete extends Component {
             .catch(err => console.error(err))
     };
 
-    updateAthlete = () => {
-        const id = this.state.model._id;
+    updateAthlete = (id, athlete) => {
         fetch(`http://${config.host}/api/athlete/${id}`, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: this.stringifyAthlete(this.state.model)
+            body: JSON.stringify(athlete)
         })
             .then(() => console.log(`updated athlete ${id} successfully`))
             .then(() => this.setState({model: {}}))
@@ -85,8 +67,7 @@ export default class Athlete extends Component {
             .catch(err => console.error(err))
     };
 
-    deleteAthlete = () => {
-        const id = this.state.model._id;
+    deleteAthlete = (id) => {
         fetch(`http://${config.host}/api/athlete/${id}`, {
             method: 'DELETE'
         })
@@ -109,17 +90,35 @@ export default class Athlete extends Component {
         }
     };
 
+    getStateId = state => {
+        switch (state) {
+            case 'Finished':
+                return 0;
+            case 'Pending':
+                return 1;
+            case 'DNS':
+                return 2;
+            case 'DNF':
+                return 3;
+        }
+    };
+
     componentDidMount = () => this.loadAthlete();
 
     render() {
-        const newModel = this.state.newModel;
-        const model = this.state.model;
         const rows = [];
         this.state.athlete.forEach(item => {
             rows.push(<tr key={item._id} onClick={() => {
-                this.setState({
-                    model: item
-                });
+                $("#modify-id").val(item._id);
+                $("#modify-number").val(item.number);
+                $("#modify-firstname").val(item.firstname);
+                $("#modify-surname").val(item.surname);
+                $("#modify-year").val(item.year);
+                $("#modify-schoolclass").val(item.schoolClass);
+                $("#modify-category").val(item.category);
+                $("#modify-state").val(this.getStateText(item.state));
+                $("#modify-time").val(item.time);
+                $("#modal-modify").modal();
             }}>
                 <td>{item.number}</td>
                 <td>{item.firstname}</td>
@@ -133,73 +132,194 @@ export default class Athlete extends Component {
         });
         return (
             <div>
-                <Modal show={this.state.showUploadModal} onHide={() => this.setState({showUploadModal: false})}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Upload Schülerliste</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Control id="input" type="file" placeholder="Select file"/>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => this.setState({showUploadModal: false})}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={this.uploadFile}>
-                            Upload
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+                {/*Upload*/}
+                <div className="modal fade" id="modal-upload" tabIndex="-1" role="dialog"
+                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Schülerliste hochladen</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div>
+                                    <input className="form-control-file" id="upload" type="file" placeholder="Select file"/>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Schliessen
+                                </button>
+                                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
+                                    this.uploadFile()
+                                }}>Hochladen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <Modal show={Object.entries(newModel).length > 0} onHide={() => this.setState({model: {}})}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Create athlete</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <AthleteModel model={newModel}/>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => this.setState({newModel: {}})}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={this.createAthlete}>
-                            Create
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+                {/*Create*/}
+                <div className="modal fade" id="modal-create" tabIndex="-1" role="dialog"
+                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div>
+                                    <div className="form-group">
+                                        <label>Startnummer</label>
+                                        <input id="create-number" className="form-control" type="text" defaultValue="0"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Vorname</label>
+                                        <input id="create-firstname" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Nachname</label>
+                                        <input id="create-surname" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Jahrgang</label>
+                                        <input id="create-year" className="form-control" type="text" defaultValue="2019"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Klasse</label>
+                                        <input id="create-schoolclass" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Kategorie</label>
+                                        <input id="create-category" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Status</label>
+                                        <select id="create-state" className="form-control" defaultValue="Pending">
+                                            <option>Finished</option>
+                                            <option>Pending</option>
+                                            <option>DNS</option>
+                                            <option>DNF</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Zeit</label>
+                                        <input id="create-time" className="form-control" type="text" defaultValue="0"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Schliessen
+                                </button>
+                                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
+                                    this.createAthlete({
+                                        number: $("#create-number").val(),
+                                        firstname: $("#create-firstname").val(),
+                                        surname: $("#create-surname").val(),
+                                        year: $("#create-year").val(),
+                                        schoolClass: $("#create-schoolclass").val(),
+                                        category: $("#create-category").val(),
+                                        state: this.getStateId($("#create-state").val()),
+                                        time: $("#create-time").val(),
+                                    });
+                                }}>Hinzufügen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <Modal show={Object.entries(model).length > 0} onHide={() => this.setState({model: {}})}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Update {model.number}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <AthleteModel model={model}/>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => this.setState({model: {}})}>
-                            Close
-                        </Button>
-                        <Button variant="danger" onClick={this.deleteAthlete}>
-                            Delete
-                        </Button>
-                        <Button variant="primary" onClick={this.updateAthlete}>
-                            Update
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+                <div className="modal fade" id="modal-modify" tabIndex="-1" role="dialog"
+                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div>
+                                    <input id="modify-id" type="hidden"/>
+                                    <div className="form-group">
+                                        <label>Startnummer</label>
+                                        <input id="modify-number" className="form-control" type="text" defaultValue="0"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Vorname</label>
+                                        <input id="modify-firstname" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Nachname</label>
+                                        <input id="modify-surname" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Jahrgang</label>
+                                        <input id="modify-year" className="form-control" type="text" defaultValue="2019"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Klasse</label>
+                                        <input id="modify-schoolclass" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Kategorie</label>
+                                        <input id="modify-category" className="form-control" type="text"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Status</label>
+                                        <select id="modify-state" className="form-control">
+                                            <option>Finished</option>
+                                            <option>Pending</option>
+                                            <option>DNS</option>
+                                            <option>DNF</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Zeit</label>
+                                        <input id="modify-time" className="form-control" type="text" defaultValue="0"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Schliessen
+                                </button>
+                                <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => {
+                                    this.deleteAthlete($("#modify-id").val());
+                                }}>Löschen</button>
+                                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
+                                    this.updateAthlete($("#modify-id").val(), {
+                                        number: $("#modify-number").val(),
+                                        firstname: $("#modify-firstname").val(),
+                                        surname: $("#modify-surname").val(),
+                                        year: $("#modify-year").val(),
+                                        schoolClass: $("#modify-schoolclass").val(),
+                                        category: $("#modify-category").val(),
+                                        state: this.getStateId($("#modify-state").val()),
+                                        time: $("#modify-time").val(),
+                                    });
+                                }}>Aktualisieren</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <Button variant="outline-primary" onClick={() => this.setState({showUploadModal: true})}>Upload</Button>
-                <Button variant="outline-primary" onClick={() => this.setState({newModel: {
-                        number: 0,
-                        firstname: '',
-                        surname: '',
-                        year: 2019,
-                        schoolClass: '',
-                        category: '',
-                        state: 1,
-                        time: 0,
-                    }})}>Create</Button>
+                <button type="button" className="btn btn-primary" onClick={() => {
+                    $("#modal-upload").modal();
+                }}>
+                    Hochladen
+                </button>
+                <button type="button" className="btn btn-primary" onClick={() => {
+                    $("#modal-create").modal();
+                }}>
+                    Hinzufügen
+                </button>
 
-                <Table bordered hover>
+                <table className="table table-bordered table-hover">
                     <thead>
                     <tr>
                         <th>Startnummer</th>
@@ -215,7 +335,7 @@ export default class Athlete extends Component {
                     <tbody>
                     {rows}
                     </tbody>
-                </Table>
+                </table>
             </div>
         );
     };

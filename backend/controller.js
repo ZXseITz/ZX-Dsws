@@ -9,12 +9,12 @@ function upload(req, res, dbs) {
             console.error(err);
             res.status(500).send();
         } else {
-            const csv = files.csv;
+            const file = files.csv;
             const reader = new FileReader();
             reader.onload = () => {
                 const list = [];
                 let counter = 1;
-                const lines = csv.split(/\r?\n/);
+                const lines = reader.result.split(/\r?\n/);
                 for (let i = 1; i < lines.length - 1; i++) {
                     const attr = lines[i].split(';');
                     if (attr[0] === "") continue;
@@ -46,7 +46,7 @@ function upload(req, res, dbs) {
                     }
                 })
             };
-            reader.readAsText(csv)
+            reader.readAsText(file)
         }
     });
 }
