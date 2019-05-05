@@ -1,7 +1,4 @@
 const ObjectID = require('mongodb').ObjectID;
-const formidable = require('formidable');
-const FileReader = require('filereader');
-const upload = require('../upload');
 
 module.exports = (router, dbs) => {
     router.get('/', (req, res) => {
@@ -40,8 +37,7 @@ module.exports = (router, dbs) => {
         });
     });
 
-    router.get('/ranked/', (req, res) => {
-        const q = {category: req.params.category};
+    router.get('/ranked', (req, res) => {
         dbs.db.collection('athlete').aggregate([
             {
                 $sort: {
@@ -74,20 +70,70 @@ module.exports = (router, dbs) => {
                 }
             },
             {
-                $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$category", 0 ] }, "$$ROOT" ] } }
+                $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$category", 0]}, "$$ROOT"]}}
             },
             {
                 $sort: {
-                    year: 1,
+                    age: 1,
                     sex: 1,
                 }
             },
             {
                 $project: {
                     _id: 0,
-                    year: 0,
+                    age: 0,
                     sex: 0,
                     category: 0
+                }
+            }
+        ]).toArray((err, data) => {
+            if (!err) {
+                res.json(data);
+            } else {
+                console.error(err);
+                res.status(500).send();
+            }
+        });
+    });
+
+    router.get('/run', (req, res) => {
+        dbs.db.collection('run').aggregate([
+            {
+                $unwind: '$athlete'
+            },
+            {
+                $lookup: {
+                    from: 'athlete',
+                    localField: 'athlete',
+                    foreignField: 'number',
+                    as: 'concreteAthlete'
+                }
+            },
+            {
+                $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$concreteAthlete", 0]}, "$$ROOT"]}}
+            },
+            {
+                $group: {
+                    _id: {
+                        block: '$block',
+                        distance: '$distance',
+                        startTime: '$startTime'
+                    },
+                    athlete: {
+                        $push: {
+                            number: '$number',
+                            firstname: '$firstname',
+                            surname: '$surname',
+                            year: '$year',
+                            schoolClass: '$schoolClass',
+                            category: '$category'
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    '_id.block': 1
                 }
             }
         ]).toArray((err, data) => {
@@ -122,34 +168,6 @@ module.exports = (router, dbs) => {
             } else {
                 console.error(`failed creating athlete ${json.firstname} ${json.surname}`);
                 res.status(500).send();
-            }
-        });
-    });
-
-    //todo authenticate
-    router.post('/upload', (req, res) => {
-        const form = new formidable.IncomingForm();
-        form.parse(req, (err, fields, files) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send();
-            } else {
-                const csv = files.csv;
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const json = upload.register(reader.result);
-                    // console.log(json);
-                    dbs.dbAdmin.collection('athlete').insertMany(json, (err, data) => {
-                        if (!err) {
-                            console.log(`uploaded all athlete`);
-                            res.status(204).send()
-                        } else {
-                            console.log(`failed uploading athlete`);
-                            res.status(500).send();
-                        }
-                    })
-                };
-                reader.readAsText(csv)
             }
         });
     });

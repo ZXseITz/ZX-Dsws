@@ -6,14 +6,14 @@ module.exports = (router, dbs) => {
         if (req.query.hasOwnProperty('name')) {
             query['name'] = req.query.name
         }
-        if (req.query.hasOwnProperty('year')) {
-            query['year'] = req.query.year
+        if (req.query.hasOwnProperty('age')) {
+            query['age'] = req.query.age
         }
         if (req.query.hasOwnProperty('sex')) {
             query['sex'] = req.query.sex
         }
         dbs.db.collection('categories').find(query).sort({
-            year: 1,
+            age: 1,
             sex: 1
         }).toArray((err, data) => {
             if (!err) {

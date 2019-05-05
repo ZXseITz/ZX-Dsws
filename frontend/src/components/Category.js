@@ -30,8 +30,8 @@ export default class Category extends Component {
     stringifyCategory = model => {
         // exclude _id
         return JSON.stringify({
-            name: `${model.sex}${model.year}`,
-            year: model.year,
+            name: `${model.sex}${model.age}`,
+            age: model.age,
             sex: model.sex,
             distance: model.distance,
         });
@@ -74,7 +74,7 @@ export default class Category extends Component {
             .catch(err => console.error(err))
     };
 
-    componentWillMount = () => this.loadCategories();
+    componentDidMount = () => this.loadCategories();
 
     render() {
         const model = this.state.model;
@@ -87,7 +87,7 @@ export default class Category extends Component {
                 });
             }}>
                 <td>{item.name}</td>
-                <td>{item.year}</td>
+                <td>{item.age}</td>
                 <td>{item.sex}</td>
                 <td>{item.distance}</td>
             </tr>)
@@ -153,7 +153,7 @@ export default class Category extends Component {
                     <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Jahr</th>
+                        <th>Alter</th>
                         <th>Geschlecht</th>
                         <th>Distanz</th>
                     </tr>

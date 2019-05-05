@@ -24,7 +24,7 @@ export default class Athlete extends Component {
         const file = document.getElementById('input').files[0];
         const data = new FormData();
         data.append('csv', file);
-        fetch(`http://${config.host}/api/athlete/upload`, {
+        fetch(`http://${config.host}/api/upload`, {
             method: 'POST',
             body: data
         })
@@ -109,7 +109,7 @@ export default class Athlete extends Component {
         }
     };
 
-    componentWillMount = () => this.loadAthlete();
+    componentDidMount = () => this.loadAthlete();
 
     render() {
         const newModel = this.state.newModel;
@@ -187,7 +187,7 @@ export default class Athlete extends Component {
                     </Modal.Footer>
                 </Modal>
 
-                <Button variant="outline-primary" onClick={this.handleUploadShow}>Upload</Button>
+                <Button variant="outline-primary" onClick={() => this.setState({showUploadModal: true})}>Upload</Button>
                 <Button variant="outline-primary" onClick={() => this.setState({newModel: {
                         number: 0,
                         firstname: '',

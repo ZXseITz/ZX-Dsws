@@ -20,8 +20,8 @@ export default class CategoryModel extends Component {
     render() {
         return <Form>
             <Form.Group as={Row} controlId='formYear'>
-                <Form.Label>Jahr</Form.Label>
-                <Form.Control type='text' onChange={event => this.onChangeInt(event, 'year')} defaultValue={this.model.year}/>
+                <Form.Label>Alter</Form.Label>
+                <Form.Control type='text' onChange={event => this.onChangeInt(event, 'age')} defaultValue={this.model.year}/>
             </Form.Group>
             <Form.Group as={Row} controlId='formSex'>
                 <Form.Label>Gechlecht</Form.Label>
