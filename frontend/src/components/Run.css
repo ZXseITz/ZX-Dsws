@@ -1,6 +1,7 @@
 .block {
     border: 1px solid darkgreen;
     margin-top: 1cm;
+    padding: 0.2cm;
 }
 
 .block-title {

@@ -1,4 +1,4 @@
-const moment = require("moment");
+const moment = require('moment');
 const formidable = require('formidable');
 const FileReader = require('filereader');
 
@@ -93,14 +93,18 @@ function runOrder(req, res, dbs) {
     ]).toArray((err, data) => {
         if (!err) {
             const items = [];
-            let item = {
-                block: 0,
-            };
+            //todo simplify zimezone summer/winter
+            const timeManager = new TimeManager(2,
+                "2019-05-24 09:30:00",
+                "2019-05-24 11:40:00",
+                "2019-05-24 13:30:00");
+            const counter = new Counter(1);
+            let item;
             data.forEach(distance => {
                 item = {
                     distance: distance._id,
-                    block: item.block + 1,
-                    startTime: moment.now(),
+                    block: counter.get(),
+                    startTime: timeManager.get(),
                     athlete: []
                 };
                 distance.athlete.forEach(a => {
@@ -108,8 +112,8 @@ function runOrder(req, res, dbs) {
                         items.push(item);
                         item = {
                             distance: distance._id,
-                            block: item.block + 1,
-                            startTime: moment.now(),
+                            block: counter.get(),
+                            startTime: timeManager.get(),
                             athlete: []
                         }
                     }
@@ -133,6 +137,38 @@ function runOrder(req, res, dbs) {
             res.status(500).send();
         }
     });
+}
+
+class Counter {
+    constructor(start = 0) {
+        this.count = start;
+    }
+
+    get() {
+        const result = this.count;
+        this.count = result + 1;
+        return result;
+    }
+}
+
+class TimeManager {
+    constructor(interval, start, lunchStart, lunchEnd) {
+        this.interval = interval;
+        this.time = Date.parse(start);
+        this.morning = true;
+        this.lunch1 = Date.parse(lunchStart);
+        this.lunch2 = Date.parse(lunchEnd);
+    }
+
+    get() {
+        const result = new Date(this.time);
+        this.time = this.time + this.interval * 60000;
+        if (this.morning && this.lunch1 - this.time < 0) {
+            this.time = this.lunch2;
+            this.morning = false;
+        }
+        return result;
+    }
 }
 
 module.exports = {

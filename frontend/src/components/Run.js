@@ -50,10 +50,10 @@ export default class Run extends Component {
                 <div className='col-4 block-title'>
                     <h4>Block: {item._id.block}</h4>
                     <p>Distanz: {item._id.distance}m</p>
-                    <p>Startzeit: {item._id.startTime}</p>
+                    <p>Startzeit: {(new Date(item._id.startTime)).toLocaleTimeString()}</p>
                 </div>
                 <div className='col-8'>
-                    <table className="table">
+                    <table className="table table-bordered">
                         {/*<thead>*/}
                         {/*<tr>*/}
                         {/*    <th>Startnummer</th>*/}
