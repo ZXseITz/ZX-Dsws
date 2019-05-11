@@ -97,7 +97,7 @@ export default class Category extends Component {
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Kategory erstellen</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -131,7 +131,7 @@ export default class Category extends Component {
                                         sex: $("#create-sex").val(),
                                         distance: $("#create-distance").val()
                                     });
-                                }}>Hinzufügen
+                                }}>Erstellen
                                 </button>
                             </div>
                         </div>
@@ -143,7 +143,7 @@ export default class Category extends Component {
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Kategorie bearbeiten</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>

@@ -136,7 +136,7 @@ export default class Student extends Component {
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Schüler erstellen</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -181,7 +181,7 @@ export default class Student extends Component {
                                         classId: $("#create-classId").val(),
                                         categoryId: $("#create-categoryId").val(),
                                     });
-                                }}>Hinzufügen
+                                }}>Erstellen
                                 </button>
                             </div>
                         </div>
@@ -193,7 +193,7 @@ export default class Student extends Component {
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Schüler bearbeiten</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>

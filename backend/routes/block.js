@@ -6,7 +6,7 @@ module.exports = (router, dbs) => {
         if (req.query.hasOwnProperty('blockId')) {
             query['blockId'] = req.query.blockId
         }
-        dbs.db.collection('block').find(query).sort({
+        dbs.db.collection('blocks').find(query).sort({
             blockId: 1,
         }).toArray((err, data) => {
             if (!err) {

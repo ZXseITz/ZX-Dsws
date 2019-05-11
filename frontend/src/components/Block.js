@@ -1,7 +1,9 @@
 import React, {Component} from "react"
 import config from "../config";
 import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.js';
 import './Block.css'
+import $ from "jquery";
 
 export default class Block extends Component {
     constructor(props) {
@@ -11,8 +13,8 @@ export default class Block extends Component {
         }
     }
 
-    load = () => {
-        fetch(`http://${config.host}/api/athlete/run`, {
+    load() {
+        fetch(`http://${config.host}/api/blocks`, {
             method: 'GET'
         })
             .then(res => res.json())
@@ -20,50 +22,98 @@ export default class Block extends Component {
             .catch(err => console.error(err))
     };
 
-    createRunOder = () => {
+    createRunOder() {
         fetch(`http://${config.host}/api/runOrder`, {
             method: 'POST'
         })
             .then(() => console.log(`created run order successfully`))
+            .then(() => this.load())
             .catch(err => console.error(err))
     };
 
+    createBlock(block) {
+        fetch(`http://${config.host}/api/blocks`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(block)
+        })
+            .then(() => console.log(`created block successfully`))
+            .then(() => this.load())
+            .catch(err => console.error(err))
+    }
+
+    updateBlock(id, block) {
+        fetch(`http://${config.host}/api/blocks/${id}`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(block)
+        })
+            .then(() => console.log(`updated block ${id} successfully`))
+            .then(() => this.load())
+            .catch(err => console.error(err))
+    }
+
+    deleteBlock(id) {
+        fetch(`http://${config.host}/api/blocks/${id}`, {
+            method: 'DELETE'
+        })
+            .then(() => console.log(`deleted block ${id} successfully`))
+            .then(() => this.load())
+            .catch(err => console.error(err))
+    }
+
     componentDidMount() {
+        // $('#create-datepicker').datetimepicker();
+        // $('#modify-datepicker').datetimepicker();
         this.load();
     }
 
     render() {
         const items = [];
         this.state.data.forEach(item => {
+            const date = new Date(item.startTime);
             const rows = [];
-            item.athlete.forEach(a => {
-                rows.push(<tr key={a.number}>
-                    <td>{a.number}</td>
-                    <td>{a.firstname}</td>
-                    <td>{a.surname}</td>
-                    <td>{a.year}</td>
-                    <td>{a.schoolClass}</td>
-                    <td>{a.category}</td>
-                </tr>)
-            });
-            items.push(<div className='row block'>
-                <div className='col-4 block-title'>
-                    <h4>Block: {item._id.block}</h4>
-                    <p>Distanz: {item._id.distance}m</p>
-                    <p>Startzeit: {(new Date(item._id.startTime)).toLocaleTimeString()}</p>
+            // item.athlete.forEach(a => {
+            //     rows.push(<tr key={a.number}>
+            //         <td>{a.number}</td>
+            //         <td>{a.firstname}</td>
+            //         <td>{a.surname}</td>
+            //         <td>{a.year}</td>
+            //         <td>{a.schoolClass}</td>
+            //         <td>{a.category}</td>
+            //     </tr>)
+            // });
+            // items.push(<div className='row block'>
+            //     <div className='col-4 block-title'>
+            //         <h4>Block: {item._id.block}</h4>
+            //         <p>Distanz: {item._id.distance}m</p>
+            //         <p>Startzeit: {(new Date(item._id.startTime)).toLocaleTimeString()}</p>
+            //     </div>
+            //     <div className='col-8'>
+            //         <table className="table table-bordered">
+            //             <tbody>
+            //             {rows}
+            //             </tbody>
+            //         </table>
+            //     </div>
+            // </div>)
+            items.push(<div key={item.blockId} className='row block'>
+                <div className='col-4 block-title' onClick={() => {
+                    $("#modify-id").val(item._id);
+                    $("#modify-blockId").val(item.blockId);
+                    $("#modify-startTimeHour").val(date.getHours());
+                    $("#modify-startTimeMinute").val(date.getMinutes());
+                    $("#modal-modify").modal()
+                }}>
+                    <h4>Block: {item.blockId}</h4>
+                    <p>Startzeit: {date.toLocaleTimeString()}</p>
                 </div>
                 <div className='col-8'>
                     <table className="table table-bordered">
-                        {/*<thead>*/}
-                        {/*<tr>*/}
-                        {/*    <th>Startnummer</th>*/}
-                        {/*    <th>Vorname</th>*/}
-                        {/*    <th>Nachname</th>*/}
-                        {/*    <th>Jahrgang</th>*/}
-                        {/*    <th>Klasse</th>*/}
-                        {/*    <th>Kategorie</th>*/}
-                        {/*</tr>*/}
-                        {/*</thead>*/}
                         <tbody>
                         {rows}
                         </tbody>
@@ -73,7 +123,112 @@ export default class Block extends Component {
         });
 
         return <div>
-            <button type="button" className="btn btn-primary" onClick={this.createRunOder}>Create Run Order</button>
+            {/*Create*/}
+            <div className="modal fade" id="modal-create" tabIndex="-1" role="dialog"
+                 aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalCenterTitle">Block erstellen</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div>
+                                <div className="form-group">
+                                    <label>Block</label>
+                                    <input id="create-blockId" className="form-control" type="text" defaultValue="0"/>
+                                </div>
+                                <div className="form-group">
+                                    <label>Startzeit</label>
+                                    <div className="form-control">
+                                        <input id="create-startTimeHour" type='text'/>
+                                        :
+                                        <input id="create-startTimeMinute" type='text'/>
+                                    </div>
+                                    {/*<div id="create-datepicker" className="input-group date">*/}
+                                    {/*    <input id="create-startTime" type='text' className="form-control"/>*/}
+                                    {/*    <span className="input-group-addon">*/}
+                                    {/*        <span className="glyphicon glyphicon-calendar"></span>*/}
+                                    {/*    </span>*/}
+                                    {/*</div>*/}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Schliessen
+                            </button>
+                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
+                                const hour = $("#create-startTimeHour").val();
+                                const minute = $("#create-startTimeMinute").val();
+                                this.createBlock({
+                                    blockId: $("#create-blockId").val(),
+                                    startTime: new Date(Date.parse(`2019-05-24 ${hour}:${minute}:00`))
+                                });
+                            }}>Erstellen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/*Update / Delete*/}
+            <div className="modal fade" id="modal-modify" tabIndex="-1" role="dialog"
+                 aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalCenterTitle">Block bearbeiten</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <input id="modify-id" type="hidden"/>
+                                <div className="form-group">
+                                    <label>Block</label>
+                                    <input id="modify-blockId" className="form-control" type="text"/>
+                                </div>
+                                <div className="form-group">
+                                    <label>Startzeit</label>
+                                    <div className="form-control">
+                                        <input id="modify-startTimeHour" type='text'/>
+                                        :
+                                        <input id="modify-startTimeMinute" type='text'/>
+                                    </div>
+                                    {/*<div id="modify-datepicker" className="input-group date">*/}
+                                    {/*<input id="modify-startTime" type='text' className="form-control"/>*/}
+                                    {/*<span className="input-group-addon">*/}
+                                    {/*    <span className="glyphicon glyphicon-calendar"></span>*/}
+                                    {/*</span>*/}
+                                    {/*</div>*/}
+                                </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Schliessen
+                            </button>
+                            <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => {
+                                this.deleteBlock($("#modify-id").val());
+                            }}>Löschen</button>
+                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
+                                const hour = $("#modify-startTimeHour").val();
+                                const minute = $("#modify-startTimeMinute").val();
+                                this.updateBlock($("#modify-id").val(), {
+                                    blockId: $("#modify-blockId").val(),
+                                    startTime: new Date(Date.parse(`2019-05-24 ${hour}:${minute}:00`))
+                                });
+                            }}>Aktualisieren</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" className="btn btn-primary" onClick={this.createRunOder}>Startgruppen automatisch erstellen</button>
+            <button type="button" className="btn btn-primary" onClick={() => {
+                $('#modal-create').modal()
+            }}>
+                Erstellen
+            </button>
             <div className='container'>
                 {items}
             </div>
