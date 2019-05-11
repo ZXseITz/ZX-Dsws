@@ -12,6 +12,7 @@ module.exports = (router, dbs) => {
                     let: { pBlockId: "$blockId"},
                     pipeline: [
                         { $match: { $expr: { $eq: ["$run.blockId", "$$pBlockId"]}}},
+                        { $project: {"run.blockId": 0}}
                     ],
                     as: "students"
                 }
