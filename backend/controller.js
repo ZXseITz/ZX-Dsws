@@ -24,24 +24,22 @@ function upload(req, res, dbs) {
                     const age = 2019 - year;
                     const category = `${attr[6].toLowerCase()}${age < 7 ? 7 : age > 16 ? 16 : age}`;
                     list.push({
-                        number: counter,
+                        startNumber: counter,
                         firstname: attr[4],
                         surname: attr[3],
-                        year: year,
-                        schoolClass: attr[0].substr(1),
-                        category: category,
-                        state: 1,
-                        time: 0.0
+                        yearOfBirth: year,
+                        classId: attr[0].substr(1),
+                        categoryId: category
                     });
                     counter += 1;
                 }
 
-                dbs.dbAdmin.collection('athlete').insertMany(list, (err, data) => {
+                dbs.dbAdmin.collection('students').insertMany(list, (err, data) => {
                     if (!err) {
-                        console.log(`uploaded all athlete`);
+                        console.log(`uploaded all students`);
                         res.status(204).send()
                     } else {
-                        console.log(`failed uploading athlete`);
+                        console.log(`failed uploading students`);
                         res.status(500).send();
                     }
                 })
@@ -173,5 +171,5 @@ class TimeManager {
 
 module.exports = {
     'upload': upload,
-    'runOrder': runOrder,
+    'blockOrder': runOrder,
 };

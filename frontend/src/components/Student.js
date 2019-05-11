@@ -4,7 +4,7 @@ import 'bootstrap/dist/js/bootstrap.js';
 import config from "../config.json"
 import $ from "jquery";
 
-export default class Athlete extends Component {
+export default class Student extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -13,9 +13,9 @@ export default class Athlete extends Component {
 
         this.uploadFile.bind(this);
         this.loadAthlete.bind(this);
-        this.createAthlete.bind(this);
-        this.updateAthlete.bind(this);
-        this.deleteAthlete.bind(this);
+        this.createStudent.bind(this);
+        this.updateStudent.bind(this);
+        this.deleteStudent.bind(this);
     };
 
     uploadFile = () => {
@@ -31,7 +31,7 @@ export default class Athlete extends Component {
     };
 
     loadAthlete = () => {
-        fetch(`http://${config.host}/api/athlete`, {
+        fetch(`http://${config.host}/api/students`, {
             method: 'GET'
         })
             .then(res => res.json())
@@ -39,8 +39,8 @@ export default class Athlete extends Component {
             .catch(err => console.error(err))
     };
 
-    createAthlete = (athlete) => {
-        fetch(`http://${config.host}/api/athlete`, {
+    createStudent = (athlete) => {
+        fetch(`http://${config.host}/api/students`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -53,54 +53,28 @@ export default class Athlete extends Component {
             .catch(err => console.error(err))
     };
 
-    updateAthlete = (id, athlete) => {
-        fetch(`http://${config.host}/api/athlete/${id}`, {
+    updateStudent = (id, athlete) => {
+        fetch(`http://${config.host}/api/students/${id}`, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(athlete)
         })
-            .then(() => console.log(`updated athlete ${id} successfully`))
+            .then(() => console.log(`updated student ${id} successfully`))
             .then(() => this.setState({model: {}}))
             .then(() => this.loadAthlete())
             .catch(err => console.error(err))
     };
 
-    deleteAthlete = (id) => {
-        fetch(`http://${config.host}/api/athlete/${id}`, {
+    deleteStudent = (id) => {
+        fetch(`http://${config.host}/api/students/${id}`, {
             method: 'DELETE'
         })
-            .then(() => console.log(`deleted athlete ${id} successfully`))
+            .then(() => console.log(`deleted student ${id} successfully`))
             .then(() => this.setState({model: {}}))
             .then(() => this.loadAthlete())
             .catch(err => console.error(err))
-    };
-
-    getStateText = state => {
-        switch (state) {
-            case 0:
-                return 'Finished';
-            case 1:
-                return 'Pending';
-            case 2:
-                return 'DNS';
-            case 3:
-                return 'DNF';
-        }
-    };
-
-    getStateId = state => {
-        switch (state) {
-            case 'Finished':
-                return 0;
-            case 'Pending':
-                return 1;
-            case 'DNS':
-                return 2;
-            case 'DNF':
-                return 3;
-        }
     };
 
     componentDidMount = () => this.loadAthlete();
@@ -110,24 +84,20 @@ export default class Athlete extends Component {
         this.state.athlete.forEach(item => {
             rows.push(<tr key={item._id} onClick={() => {
                 $("#modify-id").val(item._id);
-                $("#modify-number").val(item.number);
+                $("#modify-startNumber").val(item.startNumber);
                 $("#modify-firstname").val(item.firstname);
                 $("#modify-surname").val(item.surname);
-                $("#modify-year").val(item.year);
-                $("#modify-schoolclass").val(item.schoolClass);
-                $("#modify-category").val(item.category);
-                $("#modify-state").val(this.getStateText(item.state));
-                $("#modify-time").val(item.time);
+                $("#modify-yearOfBirth").val(item.yearOfBirth);
+                $("#modify-classId").val(item.classId);
+                $("#modify-categoryId").val(item.categoryId);
                 $("#modal-modify").modal();
             }}>
-                <td>{item.number}</td>
+                <td>{item.startNumber}</td>
                 <td>{item.firstname}</td>
                 <td>{item.surname}</td>
-                <td>{item.year}</td>
-                <td>{item.schoolClass}</td>
-                <td>{item.category}</td>
-                <td>{this.getStateText(item.state)}</td>
-                <td>{item.time}</td>
+                <td>{item.yearOfBirth}</td>
+                <td>{item.classId}</td>
+                <td>{item.categoryId}</td>
             </tr>)
         });
         return (
@@ -175,7 +145,7 @@ export default class Athlete extends Component {
                                 <div>
                                     <div className="form-group">
                                         <label>Startnummer</label>
-                                        <input id="create-number" className="form-control" type="text" defaultValue="0"/>
+                                        <input id="create-startNumber" className="form-control" type="text" defaultValue="0"/>
                                     </div>
                                     <div className="form-group">
                                         <label>Vorname</label>
@@ -187,28 +157,15 @@ export default class Athlete extends Component {
                                     </div>
                                     <div className="form-group">
                                         <label>Jahrgang</label>
-                                        <input id="create-year" className="form-control" type="text" defaultValue="2019"/>
+                                        <input id="create-yearOfBirth" className="form-control" type="text" defaultValue="2019"/>
                                     </div>
                                     <div className="form-group">
                                         <label>Klasse</label>
-                                        <input id="create-schoolclass" className="form-control" type="text"/>
+                                        <input id="create-classId" className="form-control" type="text"/>
                                     </div>
                                     <div className="form-group">
                                         <label>Kategorie</label>
-                                        <input id="create-category" className="form-control" type="text"/>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Status</label>
-                                        <select id="create-state" className="form-control" defaultValue="Pending">
-                                            <option>Finished</option>
-                                            <option>Pending</option>
-                                            <option>DNS</option>
-                                            <option>DNF</option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Zeit</label>
-                                        <input id="create-time" className="form-control" type="text" defaultValue="0"/>
+                                        <input id="create-categoryId" className="form-control" type="text"/>
                                     </div>
                                 </div>
                             </div>
@@ -216,13 +173,13 @@ export default class Athlete extends Component {
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Schliessen
                                 </button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
-                                    this.createAthlete({
-                                        number: $("#create-number").val(),
+                                    this.createStudent({
+                                        startNumber: $("#create-startNumber").val(),
                                         firstname: $("#create-firstname").val(),
                                         surname: $("#create-surname").val(),
-                                        year: $("#create-year").val(),
-                                        schoolClass: $("#create-schoolclass").val(),
-                                        category: $("#create-category").val(),
+                                        yearOfBirth: $("#create-yearOfBirth").val(),
+                                        classId: $("#create-classId").val(),
+                                        categoryId: $("#create-categoryId").val(),
                                         state: this.getStateId($("#create-state").val()),
                                         time: $("#create-time").val(),
                                     });
@@ -248,7 +205,7 @@ export default class Athlete extends Component {
                                     <input id="modify-id" type="hidden"/>
                                     <div className="form-group">
                                         <label>Startnummer</label>
-                                        <input id="modify-number" className="form-control" type="text" defaultValue="0"/>
+                                        <input id="modify-startNumber" className="form-control" type="text" defaultValue="0"/>
                                     </div>
                                     <div className="form-group">
                                         <label>Vorname</label>
@@ -260,28 +217,15 @@ export default class Athlete extends Component {
                                     </div>
                                     <div className="form-group">
                                         <label>Jahrgang</label>
-                                        <input id="modify-year" className="form-control" type="text" defaultValue="2019"/>
+                                        <input id="modify-yearOfBirth" className="form-control" type="text" defaultValue="2019"/>
                                     </div>
                                     <div className="form-group">
                                         <label>Klasse</label>
-                                        <input id="modify-schoolclass" className="form-control" type="text"/>
+                                        <input id="modify-classId" className="form-control" type="text"/>
                                     </div>
                                     <div className="form-group">
                                         <label>Kategorie</label>
-                                        <input id="modify-category" className="form-control" type="text"/>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Status</label>
-                                        <select id="modify-state" className="form-control">
-                                            <option>Finished</option>
-                                            <option>Pending</option>
-                                            <option>DNS</option>
-                                            <option>DNF</option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Zeit</label>
-                                        <input id="modify-time" className="form-control" type="text" defaultValue="0"/>
+                                        <input id="modify-categoryId" className="form-control" type="text"/>
                                     </div>
                                 </div>
                             </div>
@@ -289,18 +233,16 @@ export default class Athlete extends Component {
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Schliessen
                                 </button>
                                 <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => {
-                                    this.deleteAthlete($("#modify-id").val());
+                                    this.deleteStudent($("#modify-id").val());
                                 }}>Löschen</button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
-                                    this.updateAthlete($("#modify-id").val(), {
-                                        number: $("#modify-number").val(),
+                                    this.updateStudent($("#modify-id").val(), {
+                                        startNumber: $("#modify-startNumber").val(),
                                         firstname: $("#modify-firstname").val(),
                                         surname: $("#modify-surname").val(),
-                                        year: $("#modify-year").val(),
-                                        schoolClass: $("#modify-schoolclass").val(),
-                                        category: $("#modify-category").val(),
-                                        state: this.getStateId($("#modify-state").val()),
-                                        time: $("#modify-time").val(),
+                                        yearOfBirth: $("#modify-yearOfBirth").val(),
+                                        classId: $("#modify-classId").val(),
+                                        categoryId: $("#modify-categoryId").val(),
                                     });
                                 }}>Aktualisieren</button>
                             </div>
@@ -328,8 +270,6 @@ export default class Athlete extends Component {
                         <th>Jahrgang</th>
                         <th>Klasse</th>
                         <th>Kategorie</th>
-                        <th>Status</th>
-                        <th>Zeit</th>
                     </tr>
                     </thead>
                     <tbody>

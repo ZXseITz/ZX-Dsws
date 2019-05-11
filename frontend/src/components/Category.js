@@ -29,8 +29,8 @@ export default class Category extends Component {
     stringifyCategory = model => {
         // exclude _id
         return JSON.stringify({
-            name: `${model.sex}${model.age}`,
-            age: model.age,
+            categoryId: `${model.sex}${model.categoryAge}`,
+            categoryAge: model.categoryAge,
             sex: model.sex,
             distance: model.distance,
         });
@@ -78,13 +78,13 @@ export default class Category extends Component {
         this.state.categories.forEach(item => {
             rows.push(<tr key={item._id} onClick={() => {
                 $("#modify-id").val(item._id);
-                $("#modify-age").val(item.age);
+                $("#modify-categoryAge").val(item.categoryAge);
                 $("#modify-sex").val(item.sex);
                 $("#modify-distance").val(item.distance);
                 $("#modal-modify").modal();
             }}>
-                <td>{item.name}</td>
-                <td>{item.age}</td>
+                <td>{item.categoryId}</td>
+                <td>{item.categoryAge}</td>
                 <td>{item.sex}</td>
                 <td>{item.distance}</td>
             </tr>)
@@ -106,7 +106,7 @@ export default class Category extends Component {
                                 <div>
                                     <div className="form-group">
                                         <label>Alter</label>
-                                        <input id="create-age" className="form-control" type="text" defaultValue="7"/>
+                                        <input id="create-categoryAge" className="form-control" type="text" defaultValue="7"/>
                                     </div>
                                     <div className="form-group">
                                         <label>Geschlecht</label>
@@ -127,7 +127,7 @@ export default class Category extends Component {
                                 </button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
                                     this.createCategory({
-                                        age: $("#create-age").val(),
+                                        categoryAge: $("#create-categoryAge").val(),
                                         sex: $("#create-sex").val(),
                                         distance: $("#create-distance").val()
                                     });
@@ -152,7 +152,7 @@ export default class Category extends Component {
                                 <input id="modify-id" type="hidden"/>
                                 <div className="form-group">
                                     <label>Alter</label>
-                                    <input id="modify-age" className="form-control" type="text"/>
+                                    <input id="modify-categoryAge" className="form-control" type="text"/>
                                 </div>
                                 <div className="form-group">
                                     <label>Geschlecht</label>
@@ -174,7 +174,7 @@ export default class Category extends Component {
                                 }}>Löschen</button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
                                     this.updateCategory($("#modify-id").val(), {
-                                        age: $("#modify-age").val(),
+                                        categoryAge: $("#modify-categoryAge").val(),
                                         sex: $("#modify-sex").val(),
                                         distance: $("#modify-distance").val()
                                     });

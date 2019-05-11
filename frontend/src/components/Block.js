@@ -1,9 +1,9 @@
 import React, {Component} from "react"
 import config from "../config";
 import 'bootstrap/dist/css/bootstrap.css';
-import './Run.css'
+import './Block.css'
 
-export default class Run extends Component {
+export default class Block extends Component {
     constructor(props) {
         super(props);
         this.state = {
