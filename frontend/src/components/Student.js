@@ -180,8 +180,6 @@ export default class Student extends Component {
                                         yearOfBirth: $("#create-yearOfBirth").val(),
                                         classId: $("#create-classId").val(),
                                         categoryId: $("#create-categoryId").val(),
-                                        state: this.getStateId($("#create-state").val()),
-                                        time: $("#create-time").val(),
                                     });
                                 }}>Hinzufügen
                                 </button>

@@ -23,7 +23,7 @@ module.exports = (router, dbs) => {
         }
 
         dbs.db.collection("students").find(q).sort({
-            number: 1
+            startNumber: 1
         }).toArray((err, data) => {
             if (!err) {
                 res.json(data);
