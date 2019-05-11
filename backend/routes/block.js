@@ -6,9 +6,17 @@ module.exports = (router, dbs) => {
         if (req.query.hasOwnProperty('blockId')) {
             query['blockId'] = req.query.blockId
         }
-        dbs.db.collection('blocks').find(query).sort({
-            blockId: 1,
-        }).toArray((err, data) => {
+        dbs.db.collection('blocks').aggregate([
+            { $lookup: {
+                    from: "students",
+                    let: { pBlockId: "$blockId"},
+                    pipeline: [
+                        { $match: { $expr: { $eq: ["$run.blockId", "$$pBlockId"]}}},
+                    ],
+                    as: "students"
+                }
+            }
+        ]).toArray((err, data) => {
             if (!err) {
                 res.json(data);
             } else {

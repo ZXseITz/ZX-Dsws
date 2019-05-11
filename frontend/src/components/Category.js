@@ -127,9 +127,9 @@ export default class Category extends Component {
                                 </button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
                                     this.createCategory({
-                                        categoryAge: $("#create-categoryAge").val(),
+                                        categoryAge: parseInt($("#create-categoryAge").val()),
                                         sex: $("#create-sex").val(),
-                                        distance: $("#create-distance").val()
+                                        distance: parseInt($("#create-distance").val())
                                     });
                                 }}>Erstellen
                                 </button>
@@ -174,9 +174,9 @@ export default class Category extends Component {
                                 }}>Löschen</button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
                                     this.updateCategory($("#modify-id").val(), {
-                                        categoryAge: $("#modify-categoryAge").val(),
+                                        categoryAge: parseInt($("#modify-categoryAge").val()),
                                         sex: $("#modify-sex").val(),
-                                        distance: $("#modify-distance").val()
+                                        distance:  parseInt($("#modify-distance").val())
                                     });
                                 }}>Aktualisieren</button>
                             </div>

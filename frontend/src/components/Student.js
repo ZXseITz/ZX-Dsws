@@ -174,12 +174,12 @@ export default class Student extends Component {
                                 </button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
                                     this.createStudent({
-                                        startNumber: $("#create-startNumber").val(),
+                                        startNumber: parseInt($("#create-startNumber").val()),
                                         firstname: $("#create-firstname").val(),
                                         surname: $("#create-surname").val(),
                                         yearOfBirth: $("#create-yearOfBirth").val(),
                                         classId: $("#create-classId").val(),
-                                        categoryId: $("#create-categoryId").val(),
+                                        categoryId: parseInt($("#create-categoryId").val()),
                                     });
                                 }}>Erstellen
                                 </button>
@@ -235,10 +235,10 @@ export default class Student extends Component {
                                 }}>Löschen</button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={() => {
                                     this.updateStudent($("#modify-id").val(), {
-                                        startNumber: $("#modify-startNumber").val(),
+                                        startNumber: parseInt($("#modify-startNumber").val()),
                                         firstname: $("#modify-firstname").val(),
                                         surname: $("#modify-surname").val(),
-                                        yearOfBirth: $("#modify-yearOfBirth").val(),
+                                        yearOfBirth: parseInt($("#modify-yearOfBirth").val()),
                                         classId: $("#modify-classId").val(),
                                         categoryId: $("#modify-categoryId").val(),
                                     });

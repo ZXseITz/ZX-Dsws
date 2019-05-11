@@ -163,7 +163,7 @@ export default class Block extends Component {
                                 const hour = $("#create-startTimeHour").val();
                                 const minute = $("#create-startTimeMinute").val();
                                 this.createBlock({
-                                    blockId: $("#create-blockId").val(),
+                                    blockId: parseInt($("#create-blockId").val()),
                                     startTime: new Date(Date.parse(`2019-05-24 ${hour}:${minute}:00`))
                                 });
                             }}>Erstellen
@@ -214,7 +214,7 @@ export default class Block extends Component {
                                 const hour = $("#modify-startTimeHour").val();
                                 const minute = $("#modify-startTimeMinute").val();
                                 this.updateBlock($("#modify-id").val(), {
-                                    blockId: $("#modify-blockId").val(),
+                                    blockId: parseInt($("#modify-blockId").val()),
                                     startTime: new Date(Date.parse(`2019-05-24 ${hour}:${minute}:00`))
                                 });
                             }}>Aktualisieren</button>
