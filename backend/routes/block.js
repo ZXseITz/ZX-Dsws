@@ -7,12 +7,29 @@ module.exports = (router, dbs) => {
             query['blockId'] = req.query.blockId
         }
         dbs.db.collection('blocks').aggregate([
-            { $lookup: {
+            {
+                $lookup: {
                     from: "students",
-                    let: { pBlockId: "$blockId"},
+                    let: {pBlockId: "$blockId"},
                     pipeline: [
-                        { $match: { $expr: { $eq: ["$run.blockId", "$$pBlockId"]}}},
-                        { $project: {"run.blockId": 0}}
+                        {$match: {$expr: {$eq: ["$run.blockId", "$$pBlockId"]}}},
+                        // {
+                        //     $lookup: {
+                        //         from: "categories",
+                        //         let: {pCatId: "$categoryId"},
+                        //         pipeline: [
+                        //             {$match: {$expr: {$eq: ["$categoryId", "$$pCatId"]}}},
+                        //         ],
+                        //         as: "category"
+                        //     },
+                        // },
+                        // {$replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$category", 0]}, "$$ROOT"]}}},
+                        {
+                            $project: {
+                                "run.blockId": 0,
+                                // "category": 0
+                            }
+                        }
                     ],
                     as: "students"
                 }

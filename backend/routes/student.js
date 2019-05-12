@@ -21,6 +21,9 @@ module.exports = (router, dbs) => {
         if (req.query.hasOwnProperty("categoryId")) {
             q["categoryId"] = req.query.categoryId;
         }
+        if (req.query.hasOwnProperty("dns")) {
+            q["run"] = {"$exists": req.query.dns === "0"}
+        }
 
         dbs.db.collection("students").find(q).sort({
             startNumber: 1
@@ -160,10 +163,10 @@ module.exports = (router, dbs) => {
         const json = req.body;
         dbs.dbAdmin.collection("students").insertOne(json, (err, data) => {
             if (!err) {
-                console.log(`created athlete ${json.firstname} ${json.surname} with id ${json._id}`);
+                console.log(`created student ${json.firstname} ${json.surname} with id ${json._id}`);
                 res.status(204).send()
             } else {
-                console.error(`failed creating athlete ${json.firstname} ${json.surname}`);
+                console.error(`failed creating student ${json.firstname} ${json.surname}`);
                 res.status(500).send();
             }
         });
@@ -175,10 +178,24 @@ module.exports = (router, dbs) => {
         const json = req.body;
         dbs.dbAdmin.collection("students").updateOne({_id: new ObjectID(id)}, {"$set": json}, (err, data) => {
             if (!err) {
-                console.log(`updated athlete ${id}`);
+                console.log(`updated student ${id}`);
                 res.status(204).send()
             } else {
-                console.log(`failed updating athlete ${id}`);
+                console.log(`failed updating student ${id}`);
+                res.status(500).send();
+            }
+        });
+    });
+
+    //todo authenticate
+    router.put("/:id/dns", (req, res) => {
+        const id = req.params.id;
+        dbs.dbAdmin.collection("students").updateOne({_id: new ObjectID(id)}, {"$unset": {"run": ""}}, (err, data) => {
+            if (!err) {
+                console.log(`removed run from student ${id}`);
+                res.status(204).send()
+            } else {
+                console.log(`failed removing run from student ${id}`);
                 res.status(500).send();
             }
         });
@@ -189,10 +206,10 @@ module.exports = (router, dbs) => {
         const id = req.params.id;
         dbs.dbAdmin.collection("students").deleteOne({_id: new ObjectID(id)}, (err, data) => {
             if (!err) {
-                console.log(`deleted athlete ${id}`);
+                console.log(`deleted student ${id}`);
                 res.status(204).send()
             } else {
-                console.log(`failed deleting athlete ${id}`);
+                console.log(`failed deleting student ${id}`);
                 res.status(500).send();
             }
         });

@@ -8,7 +8,7 @@ export default class Student extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            athlete: []
+            athlete: [],
         };
 
         this.uploadFile.bind(this);
