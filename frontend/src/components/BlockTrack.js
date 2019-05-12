@@ -3,15 +3,13 @@ import React, {Component} from "react";
 export default class BlockTrack extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            track: props.track,
-            student: props.student,
-        }
+        this.track = props.track;
+        this.student = props.student;
     }
 
     render() {
-        const track = this.state.track;
-        const student = this.state.student;
+        const track = this.track;
+        const student = this.student;
         let t = "DNS";
         if (student !== undefined) {
             switch (student.run.state) {

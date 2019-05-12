@@ -23,15 +23,6 @@ export default class Blocks extends Component {
             .catch(err => console.error(err))
     };
 
-    loadDNS(distance) {
-        return fetch(`http://${config.host}/api/students?distance=${distance}&dns=1`, {method: 'GET'})
-            .then(res => res.json())
-        .then(data => this.setState({
-            dns: data
-        }))
-        .catch(err => console.error(err))
-    };
-
     createRunOder() {
         fetch(`http://${config.host}/api/runOrder`, {
             method: 'POST'

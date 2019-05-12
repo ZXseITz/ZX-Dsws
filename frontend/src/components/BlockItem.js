@@ -7,71 +7,60 @@ export default class BlockItem extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            item: props.item,
             edit: props.edit,
-            item: props.item
-        }
+            dns: []
+        };
+        this.modify.bind(this);
+        this.finalize.bind(this);
     }
 
     modify() {
-        console.log("modify");
-        this.setState({
-            edit: true
-        });
+        const distance = this.state.item.distance;
+        fetch(`http://${config.host}/api/students?distance=${distance}&dns=1`, {method: 'GET'})
+            .then(res => res.json())
+            .then(data => this.setState({
+                dns: data,
+                edit: true
+            }))
+            .catch(err => console.error(err));
     }
 
-    save() {
-        console.log("save");
+    finalize() {
+        //todo save
         this.setState({
+            dns: [],
             edit: false
         });
-    }
-
-    saveTime(id, time) {
-        let payload;
-        if (time === "DNF") {
-            payload = {
-                "run.state": 2,
-                "run.time": 0,
-            }
-        } else if (time === "P") {
-            payload = {
-                "run.state": 1,
-                "run.time": 0,
-            }
-        } else {
-            const t = parseFloat(time);
-            if (isNaN(t)) {
-                console.error(`time ${t} is not a number`);
-            }
-            payload = {
-                "run.state": 0,
-                "run.time": t,
-            }
-        }
-
-        fetch(`http://${config.host}/api/students/${id}`, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload)
-        })
-            .then(() => console.log(`updated time of student ${id} successfully`))
-            .then(() => this.load())
-            .catch(err => console.error(err))
     }
 
     render() {
         const edit = this.state.edit;
         const item = this.state.item;
+        const dns = this.state.dns;
         const date = new Date(item.startTime);
-        const tracks =[];
+        const tracks = [];
         for (let i = 1; i <= 4; i++) {
-            const student = item.students.find(s => s.run.track === i);
+            const student = item.students.find(x => x.run.track === i);
             if (edit) {
-                tracks.push(<BlockTrackEdit key={i} items={[]} track={i} student={student} />)
+                tracks.push(<BlockTrackEdit key={i} items={dns} track={i} onChange={(prev, current) => {
+                    const students = item.students;
+                    if (prev !== undefined) {
+                        prev.run.blockId = 0;
+                        prev.run.track = 0;
+                        const index = students.indexOf(prev);
+                        if (index > -1) {
+                            students.splice(index, 1);
+                        }
+                    }
+                    if (current !== undefined) {
+                        current.run.blockId = item.blockId;
+                        current.run.track = i;
+                        students.push(current);
+                    }
+                }} student={student}/>)
             } else {
-                tracks.push(<BlockTrack key={i} track={i} student={student} />)
+                tracks.push(<BlockTrack key={i} track={i} student={student}/>)
             }
         }
 
@@ -82,11 +71,11 @@ export default class BlockItem extends Component {
                 <p>Distanz: {item.distance}m</p>
                 <button type="button" className="btn btn-primary" onClick={() => {
                     if (edit) {
-                        this.save()
+                        this.finalize()
                     } else {
                         this.modify()
                     }
-                }}>{edit ? "Speichern" : "Bearbeiten"}</button>
+                }}>{edit ? "Fertigstellen" : "Bearbeiten"}</button>
             </div>
             <div className='col'>
                 <div className="container">

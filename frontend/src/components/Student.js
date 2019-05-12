@@ -180,6 +180,12 @@ export default class Student extends Component {
                                         yearOfBirth: $("#create-yearOfBirth").val(),
                                         classId: $("#create-classId").val(),
                                         categoryId: parseInt($("#create-categoryId").val()),
+                                        run: {
+                                            blockId: 0,
+                                            track: 0,
+                                            state: 4,
+                                            time: 0,
+                                        }
                                     });
                                 }}>Erstellen
                                 </button>

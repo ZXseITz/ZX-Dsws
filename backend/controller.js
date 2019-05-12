@@ -29,7 +29,13 @@ function upload(req, res, dbs) {
                         surname: attr[3],
                         yearOfBirth: year,
                         classId: attr[0].substr(1),
-                        categoryId: category
+                        categoryId: category,
+                        run: {
+                            blockId: 0,
+                            track: 0,
+                            state: 4,
+                            time: 0,
+                        }
                     });
                     counter += 1;
                 }
