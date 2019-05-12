@@ -10,7 +10,15 @@
 }
 
 .block-track {
-    border: 1px solid darkred;
-    margin-top: 0.1cm;
-    padding: 0.2cm;
+     border: 1px solid darkred;
+     margin-top: 0.1cm;
+     padding: 0.2cm;
+ }
+
+.block-track:hover {
+    background: #FFAAAA;
+}
+
+.context-item:hover {
+    background: #AAAAFF;
 }

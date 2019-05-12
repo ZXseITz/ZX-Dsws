@@ -2,32 +2,90 @@ const ObjectID = require("mongodb").ObjectID;
 
 module.exports = (router, dbs) => {
     router.get("/", (req, res) => {
-        const q = {};
+        const query = {};
         if (req.query.hasOwnProperty("startNumber")) {
-            q["startNumber"] = req.query.startNumber;
+            query["startNumber"] = parseInt(req.query.startNumber);
         }
         if (req.query.hasOwnProperty("firstname")) {
-            q["firstname"] = req.query.firstname;
+            query["firstname"] = req.query.firstname;
         }
         if (req.query.hasOwnProperty("surname")) {
-            q["surname"] = req.query.surname;
+            query["surname"] = req.query.surname;
         }
         if (req.query.hasOwnProperty("yearOfBirth")) {
-            q["yearOfBirth"] = req.query.yearOfBirth;
+            query["yearOfBirth"] = parseInt(req.query.yearOfBirth);
         }
         if (req.query.hasOwnProperty("classId")) {
-            q["classId"] = req.query.classId;
+            query["classId"] = parseInt(req.query.classId);
         }
         if (req.query.hasOwnProperty("categoryId")) {
-            q["categoryId"] = req.query.categoryId;
+            query["categoryId"] = parseInt(req.query.categoryId);
         }
         if (req.query.hasOwnProperty("dns")) {
-            q["run"] = {"$exists": req.query.dns === "0"}
+            query["run.blockId"] = req.query.dns === "1" ? 0 : {"$gt": 0}
         }
 
-        dbs.db.collection("students").find(q).sort({
-            startNumber: 1
-        }).toArray((err, data) => {
+        const query2 = {};
+        if (req.query.hasOwnProperty("distance")) {
+            query2["distance"] = parseInt(req.query.distance);
+        }
+
+        dbs.db.collection("students").aggregate([
+            {$match: query},
+            {$sort: {startNumber: 1}},
+            {
+                $lookup: {
+                    from: "categories",
+                    let: {pCatId: "$categoryId"},
+                    pipeline: [
+                        {$match: {$expr: {$eq: ["$categoryId", "$$pCatId"]}}},
+                        {
+                            $project: {
+                                _id: 0,
+                                distance: 1
+                            }
+                        }
+                    ],
+                    as: "categories"
+                }
+            },
+            {$replaceRoot: {newRoot: {$mergeObjects: ["$$ROOT", {$arrayElemAt: ["$categories", 0]}]}}},
+            {$match: query2},
+            {$project: {categories: 0}}
+        ]).toArray((err, data) => {
+            if (!err) {
+                res.json(data);
+            } else {
+                console.error(err);
+                res.status(500).send();
+            }
+        });
+    });
+
+    router.get("/dns", (req, res) => {
+        dbs.db.collection("categories").aggregate([
+            {$match: query},
+            {$sort: {startNumber: 1}},
+            {
+                $lookup: {
+                    from: "categories",
+                    let: {pCatId: "$categoryId"},
+                    pipeline: [
+                        {$match: {$expr: {$eq: ["$categoryId", "$$pCatId"]}}},
+                        {
+                            $project: {
+                                _id: 0,
+                                distance: 1
+                            }
+                        }
+                    ],
+                    as: "categories"
+                }
+            },
+            {$replaceRoot: {newRoot: {$mergeObjects: ["$$ROOT", {$arrayElemAt: ["$categories", 0]}]}}},
+            {$match: query2},
+            {$project: {categories: 0}}
+        ]).toArray((err, data) => {
             if (!err) {
                 res.json(data);
             } else {
@@ -187,19 +245,19 @@ module.exports = (router, dbs) => {
         });
     });
 
-    //todo authenticate
-    router.put("/:id/dns", (req, res) => {
-        const id = req.params.id;
-        dbs.dbAdmin.collection("students").updateOne({_id: new ObjectID(id)}, {"$unset": {"run": ""}}, (err, data) => {
-            if (!err) {
-                console.log(`removed run from student ${id}`);
-                res.status(204).send()
-            } else {
-                console.log(`failed removing run from student ${id}`);
-                res.status(500).send();
-            }
-        });
-    });
+    // //todo authenticate
+    // router.put("/:id/dns", (req, res) => {
+    //     const id = req.params.id;
+    //     dbs.dbAdmin.collection("students").updateOne({_id: new ObjectID(id)}, {"$unset": {"run": ""}}, (err, data) => {
+    //         if (!err) {
+    //             console.log(`removed run from student ${id}`);
+    //             res.status(204).send()
+    //         } else {
+    //             console.log(`failed removing run from student ${id}`);
+    //             res.status(500).send();
+    //         }
+    //     });
+    // });
 
     //todo authenticate
     router.delete("/:id", (req, res) => {
