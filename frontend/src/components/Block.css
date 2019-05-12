@@ -8,3 +8,9 @@
     text-align: left;
     padding: 0.5cm 0.5cm;
 }
+
+.block-track {
+    border: 1px solid darkred;
+    margin-top: 0.1cm;
+    padding: 0.2cm;
+}

@@ -10,20 +10,14 @@ export default class Block extends Component {
         super(props);
         this.state = {
             data: [],
-            dns: []
         }
     }
 
     load() {
-        Promise.all([
-            fetch(`http://${config.host}/api/blocks`, {method: 'GET'})
-                .then(res => res.json()),
-            fetch(`http://${config.host}/api/students?dns=1`, {method: 'GET'})
-                .then(res => res.json())
-        ])
+        fetch(`http://${config.host}/api/blocks`, {method: 'GET'})
+            .then(res => res.json())
             .then(data => this.setState({
-                data: data[0],
-                dns: data[1]
+                data: data
             }))
             .catch(err => console.error(err))
     };
@@ -92,21 +86,20 @@ export default class Block extends Component {
         this.state.data.forEach(item => {
             const date = new Date(item.startTime);
             const rows = [];
-            item.students.forEach(a => {
-                rows[a.run.track - 1] = <tr key={a._id} onClick={() => {
-                    this.updateStudentDNS(a._id);
-                }}>
-                    <td>{a.run.track}</td>
-                    <td>{a.firstname}</td>
-                    <td>{a.surname}</td>
-                    <td>{a.startNumber}</td>
-                    <td>{a.categoryId}</td>
-                    <td>{a.yearOfBirth}</td>
-                    <td>{a.classId}</td>
-                </tr>;
-            });
+            for (let i = 1; i <= 4; i++) {
+                const student = item.students.find(s => s.run.track === i);
+                    rows.push(<div key={i} className="row block-track">
+                        <div className="col">Bahn {i}:</div>
+                        <div className="col">{student !== undefined ? student.firstname : ""}</div>
+                        <div className="col">{student !== undefined ? student.surname : ""}</div>
+                        <div className="col">{student !== undefined ? student.startNumber : ""}</div>
+                        <div className="col">{student !== undefined ? student.categoryId : ""}</div>
+                        <div className="col">{student !== undefined ? student.yearOfBirth : ""}</div>
+                        <div className="col">{student !== undefined ? student.classId : ""}</div>
+                    </div>)
+            }
             items.push(<div key={item.blockId} className='row block'>
-                <div className='col-4 block-title' onClick={() => {
+                <div className='col-3 block-title' onClick={() => {
                     $("#modify-id").val(item._id);
                     $("#modify-blockId").val(item.blockId);
                     $("#modify-startTimeHour").val(date.getHours());
@@ -117,18 +110,12 @@ export default class Block extends Component {
                     <p>Startzeit: {date.toLocaleTimeString()}</p>
                     <p>Distanz: {item.distance}m</p>
                 </div>
-                <div className='col-8'>
-                    <table className="table table-bordered">
-                        <tbody>
+                <div className='col'>
+                    <div className="container">
                         {rows}
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>)
-        });
-        const dns = [];
-        this.state.dns.forEach(item => {
-            dns.push(<option>{item.startNumber} {item.firstname} {item.surname}</option>)
         });
 
         return <div>
@@ -163,30 +150,30 @@ export default class Block extends Component {
                                     {/*    </span>*/}
                                     {/*</div>*/}
                                 </div>
-                                <div className="form-group">
-                                    <label>Bahn 1</label>
-                                    <select id="create-track1" className="form-control">
-                                        {dns}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Bahn 2</label>
-                                    <select id="create-track2" className="form-control">
-                                        {dns}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Bahn 3</label>
-                                    <select id="create-track3" className="form-control">
-                                        {dns}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Bahn 4</label>
-                                    <select id="create-track4" className="form-control">
-                                        {dns}
-                                    </select>
-                                </div>
+                                {/*<div className="form-group">*/}
+                                {/*    <label>Bahn 1</label>*/}
+                                {/*    <select id="create-track1" className="form-control">*/}
+                                {/*        {dns}*/}
+                                {/*    </select>*/}
+                                {/*</div>*/}
+                                {/*<div className="form-group">*/}
+                                {/*    <label>Bahn 2</label>*/}
+                                {/*    <select id="create-track2" className="form-control">*/}
+                                {/*        {dns}*/}
+                                {/*    </select>*/}
+                                {/*</div>*/}
+                                {/*<div className="form-group">*/}
+                                {/*    <label>Bahn 3</label>*/}
+                                {/*    <select id="create-track3" className="form-control">*/}
+                                {/*        {dns}*/}
+                                {/*    </select>*/}
+                                {/*</div>*/}
+                                {/*<div className="form-group">*/}
+                                {/*    <label>Bahn 4</label>*/}
+                                {/*    <select id="create-track4" className="form-control">*/}
+                                {/*        {dns}*/}
+                                {/*    </select>*/}
+                                {/*</div>*/}
                             </div>
                         </div>
                         <div className="modal-footer">
