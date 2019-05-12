@@ -6,49 +6,38 @@ export default class BlockTrackEdit extends Component {
         this.items = props.items;
         this.track = props.track;
         this.onChange = props.onChange;
+        this.onTimeChange = props.onTimeChange;
         this.state = {
-            student: props.student
+            student: props.student,
+            x: this.getTime(props.student)
         }
     }
 
-    changeTime(run, time) {
-        if (time === "DNF") {
-            run.state = 2;
-            run.time = 0;
-        } else if (time === "R") {
-            run.state = 1;
-            run.time = 0;
-        } else {
-            const t = parseFloat(time);
-            if (!isNaN(t)) {
-                run.state = 0;
-                run.time = t;
-            }
+    getTime(student) {
+        if (student === undefined) {
+            return ""
+        }
+        switch (student.run.state) {
+            case 0:
+                return student.run.time;
+            case 1:
+                return "R";
+            case 2:
+                return "DNF";
+            case 3:
+                return "DNS";
         }
     }
 
     render() {
         const track = this.track;
         const student = this.state.student;
-        let t = "DNS";
-        if (student !== undefined) {
-            switch (student.run.state) {
-                case 0:
-                    t = student.run.time;
-                    break;
-                case 1:
-                    t = "R";
-                    break;
-                case 2:
-                    t = "DNF";
-                    break;
-            }
-        }
         const items = [];
         items.push(<div key={0} className="change-item dropdown-item" onClick={() => {
             this.onChange(this.state.student, undefined);
             this.setState({
-                student: undefined
+                student: undefined,
+                x: ""
             })
         }}>
             Leer
@@ -57,7 +46,8 @@ export default class BlockTrackEdit extends Component {
             items.push(<div key={item._id} className="change-item dropdown-item" onClick={() => {
                 this.onChange(this.state.student, item);
                 this.setState({
-                    student: item
+                    student: item,
+                    x: this.getTime(item)
                 })
             }}>
                 {item.startNumber} {item.firstname} {item.surname}
@@ -80,8 +70,10 @@ export default class BlockTrackEdit extends Component {
             <div className="col">{student !== undefined ? student.yearOfBirth : ""}</div>
             <div className="col">{student !== undefined ? student.classId : ""}</div>
             <input readOnly={student === undefined} type="text" className="col form-control"
-                   defaultValue={t} onChange={e => {
-                       this.changeTime(student.run, e.target.value)
+                   value={this.state.x} onChange={e => this.setState({x: e.target.value})} onKeyDown={e => {
+                       if (e.keyCode === 13) {
+                           this.onTimeChange(student, this.state.x)
+                       }
             }}/>
         </div>
     }

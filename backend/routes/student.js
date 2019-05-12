@@ -21,8 +21,8 @@ module.exports = (router, dbs) => {
         if (req.query.hasOwnProperty("categoryId")) {
             query["categoryId"] = parseInt(req.query.categoryId);
         }
-        if (req.query.hasOwnProperty("dns")) {
-            query["run.blockId"] = req.query.dns === "1" ? 0 : {"$gt": 0}
+        if (req.query.hasOwnProperty("state")) {
+            query["run.state"] = parseInt(req.query.state);
         }
 
         const query2 = {};
@@ -62,9 +62,13 @@ module.exports = (router, dbs) => {
         });
     });
 
-    router.get("/dns", (req, res) => {
-        dbs.db.collection("categories").aggregate([
-            {$match: query},
+    router.get("/noBlock", (req, res) => {
+        const query = {};
+        if (req.query.hasOwnProperty("distance")) {
+            query["distance"] = parseInt(req.query.distance);
+        }
+        dbs.db.collection("students").aggregate([
+            {$match: {"run.blockId": 0}},
             {$sort: {startNumber: 1}},
             {
                 $lookup: {
@@ -83,7 +87,7 @@ module.exports = (router, dbs) => {
                 }
             },
             {$replaceRoot: {newRoot: {$mergeObjects: ["$$ROOT", {$arrayElemAt: ["$categories", 0]}]}}},
-            {$match: query2},
+            {$match: query},
             {$project: {categories: 0}}
         ]).toArray((err, data) => {
             if (!err) {

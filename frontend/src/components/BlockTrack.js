@@ -10,17 +10,20 @@ export default class BlockTrack extends Component {
     render() {
         const track = this.track;
         const student = this.student;
-        let t = "DNS";
+        let t = "";
         if (student !== undefined) {
             switch (student.run.state) {
                 case 0:
                     t = student.run.time;
                     break;
                 case 1:
-                    t = "P";
+                    t = "R";
                     break;
                 case 2:
                     t = "DNF";
+                    break;
+                case 3:
+                    t = "DNS";
                     break;
             }
         }

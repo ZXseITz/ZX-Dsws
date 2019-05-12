@@ -33,7 +33,7 @@ function upload(req, res, dbs) {
                         run: {
                             blockId: 0,
                             track: 0,
-                            state: 4,
+                            state: 3,
                             time: 0,
                         }
                     });

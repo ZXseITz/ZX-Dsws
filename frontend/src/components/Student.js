@@ -12,7 +12,7 @@ export default class Student extends Component {
         };
 
         this.uploadFile.bind(this);
-        this.loadAthlete.bind(this);
+        this.loadStudents.bind(this);
         this.createStudent.bind(this);
         this.updateStudent.bind(this);
         this.deleteStudent.bind(this);
@@ -30,7 +30,7 @@ export default class Student extends Component {
             .catch(err => console.error(err));
     };
 
-    loadAthlete = () => {
+    loadStudents = () => {
         fetch(`http://${config.host}/api/students`, {
             method: 'GET'
         })
@@ -39,31 +39,31 @@ export default class Student extends Component {
             .catch(err => console.error(err))
     };
 
-    createStudent = (athlete) => {
+    createStudent = (student) => {
         fetch(`http://${config.host}/api/students`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(athlete)
+            body: JSON.stringify(student)
         })
             .then(() => console.log(`crated athlete successfully`))
             .then(() => this.setState({newModel: {}}))
-            .then(() => this.loadAthlete())
+            .then(() => this.loadStudents())
             .catch(err => console.error(err))
     };
 
-    updateStudent = (id, athlete) => {
+    updateStudent = (id, student) => {
         fetch(`http://${config.host}/api/students/${id}`, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(athlete)
+            body: JSON.stringify(student)
         })
             .then(() => console.log(`updated student ${id} successfully`))
             .then(() => this.setState({model: {}}))
-            .then(() => this.loadAthlete())
+            .then(() => this.loadStudents())
             .catch(err => console.error(err))
     };
 
@@ -73,11 +73,11 @@ export default class Student extends Component {
         })
             .then(() => console.log(`deleted student ${id} successfully`))
             .then(() => this.setState({model: {}}))
-            .then(() => this.loadAthlete())
+            .then(() => this.loadStudents())
             .catch(err => console.error(err))
     };
 
-    componentDidMount = () => this.loadAthlete();
+    componentDidMount = () => this.loadStudents();
 
     render() {
         const rows = [];
@@ -183,7 +183,7 @@ export default class Student extends Component {
                                         run: {
                                             blockId: 0,
                                             track: 0,
-                                            state: 4,
+                                            state: 3,
                                             time: 0,
                                         }
                                     });
