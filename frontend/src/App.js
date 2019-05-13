@@ -4,7 +4,7 @@ import './App.css';
 import Navigation from "./components/Navigation"
 import Home from "./components/Home"
 import Blocks from "./components/Blocks";
-import Category from "./components/Category";
+import Categories from "./components/Categories";
 import Student from "./components/Student";
 import Error from "./components/Error"
 
@@ -18,7 +18,7 @@ class App extends Component {
             <Switch>
               <Route exact path="/" component={Home}/>
               <Route path="/blocks" component={Blocks}/>
-              <Route path="/categories" component={Category}/>
+              <Route path="/categories" component={Categories}/>
               <Route path="/students" component={Student}/>
               <Route component={Error}/>
             </Switch>
