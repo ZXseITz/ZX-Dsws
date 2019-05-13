@@ -3,9 +3,9 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import './App.css';
 import Navigation from "./components/Navigation"
 import Home from "./components/Home"
-import Run from "./components/Run";
+import Blocks from "./components/Blocks";
 import Category from "./components/Category";
-import Athlete from "./components/Athlete";
+import Student from "./components/Student";
 import Error from "./components/Error"
 
 class App extends Component {
@@ -17,9 +17,9 @@ class App extends Component {
           <div>
             <Switch>
               <Route exact path="/" component={Home}/>
-              <Route path="/run" component={Run}/>
-              <Route path="/category" component={Category}/>
-              <Route path="/athlete" component={Athlete}/>
+              <Route path="/blocks" component={Blocks}/>
+              <Route path="/categories" component={Category}/>
+              <Route path="/students" component={Student}/>
               <Route component={Error}/>
             </Switch>
           </div>
