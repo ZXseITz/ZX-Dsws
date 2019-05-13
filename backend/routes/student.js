@@ -249,20 +249,6 @@ module.exports = (router, dbs) => {
         });
     });
 
-    // //todo authenticate
-    // router.put("/:id/dns", (req, res) => {
-    //     const id = req.params.id;
-    //     dbs.dbAdmin.collection("students").updateOne({_id: new ObjectID(id)}, {"$unset": {"run": ""}}, (err, data) => {
-    //         if (!err) {
-    //             console.log(`removed run from student ${id}`);
-    //             res.status(204).send()
-    //         } else {
-    //             console.log(`failed removing run from student ${id}`);
-    //             res.status(500).send();
-    //         }
-    //     });
-    // });
-
     //todo authenticate
     router.delete("/:id", (req, res) => {
         const id = req.params.id;

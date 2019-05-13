@@ -12,6 +12,11 @@ export default class Blocks extends Component {
         this.state = {
             data: [],
         };
+        this.load.bind(this);
+        this.initBlocks.bind(this);
+        this.createBlock.bind(this);
+        this.updateBlock.bind(this);
+        this.deleteBlock.bind(this);
     }
 
     load() {
@@ -23,8 +28,8 @@ export default class Blocks extends Component {
             .catch(err => console.error(err))
     };
 
-    createRunOder() {
-        fetch(`http://${config.host}/api/runOrder`, {
+    initBlocks() {
+        fetch(`http://${config.host}/api/initBlocks`, {
             method: 'POST'
         })
             .then(() => console.log(`created run order successfully`))
@@ -81,7 +86,7 @@ export default class Blocks extends Component {
         });
 
         return <div>
-            <button type="button" className="btn btn-primary" onClick={this.createRunOder}>Startgruppen automatisch
+            <button type="button" className="btn btn-primary" onClick={() => this.initBlocks()}>Startgruppen automatisch
                 erstellen
             </button>
             <button type="button" className="btn btn-primary" onClick={() => {

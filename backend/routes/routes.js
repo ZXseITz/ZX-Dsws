@@ -7,15 +7,14 @@ const initBlockRouter = require('./block');
 const controller = require('../controller');
 
 module.exports = (app, dbs) => {
-
     //todo: authenticate
-    app.post('/api/upload', (res, req) => {
-        controller.upload(res, req, dbs);
+    app.post('/api/uploadStudents', (res, req) => {
+        controller.uploadStudents(res, req, dbs);
     });
 
     //todo: authenticate
-    app.post('/api/blockOrder', (res, req) => {
-        controller.blockOrder(res, req, dbs);
+    app.post('/api/initBlocks', (res, req) => {
+        controller.initBlocks(res, req, dbs);
     });
 
     app.use('/api/classes', initClassRouter(express.Router(), dbs));

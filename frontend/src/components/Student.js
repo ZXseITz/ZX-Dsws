@@ -22,7 +22,7 @@ export default class Student extends Component {
         const file = $('#upload').prop('files')[0];
         const data = new FormData();
         data.append('csv', file);
-        fetch(`http://${config.host}/api/upload`, {
+        fetch(`http://${config.host}/api/uploadStudents`, {
             method: 'POST',
             body: data
         })
