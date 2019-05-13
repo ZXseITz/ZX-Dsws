@@ -86,9 +86,9 @@ function initBlocks(req, res, dbs) {
         {
             $sort: {
                 distance: 1,
-                schoolClass: 1,
+                classId: 1,
                 sex: 1,
-                number: 1,
+                startNumber: 1,
             }
         },
         {
