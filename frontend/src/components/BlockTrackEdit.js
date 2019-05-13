@@ -63,13 +63,13 @@ export default class BlockTrackEdit extends Component {
                     {items}
                 </div>
             </div>
-            <div className="col">{student !== undefined ? student.firstname : ""}</div>
-            <div className="col">{student !== undefined ? student.surname : ""}</div>
-            <div className="col">{student !== undefined ? student.startNumber : ""}</div>
-            <div className="col">{student !== undefined ? student.categoryId : ""}</div>
-            <div className="col">{student !== undefined ? student.yearOfBirth : ""}</div>
-            <div className="col">{student !== undefined ? student.classId : ""}</div>
-            <input readOnly={student === undefined} type="text" className="col form-control"
+            <div className="col-2">{student !== undefined ? student.firstname : ""}</div>
+            <div className="col-2">{student !== undefined ? student.surname : ""}</div>
+            <div className="col-1">{student !== undefined ? student.startNumber : ""}</div>
+            <div className="col-1">{student !== undefined ? student.categoryId : ""}</div>
+            <div className="col-1">{student !== undefined ? student.yearOfBirth : ""}</div>
+            <div className="col-2">{student !== undefined ? student.classId : ""}</div>
+            <input readOnly={student === undefined} type="text" className="col-1 form-control"
                    value={this.state.x} onChange={e => this.setState({x: e.target.value})} onKeyDown={e => {
                        if (e.keyCode === 13) {
                            this.onTimeChange(student, this.state.x)

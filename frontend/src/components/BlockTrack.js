@@ -31,13 +31,13 @@ export default class BlockTrack extends Component {
             <div className="col-2">
                 Bahn {track}
             </div>
-            <div className="col">{student !== undefined ? student.firstname : ""}</div>
-            <div className="col">{student !== undefined ? student.surname : ""}</div>
-            <div className="col">{student !== undefined ? student.startNumber : ""}</div>
-            <div className="col">{student !== undefined ? student.categoryId : ""}</div>
-            <div className="col">{student !== undefined ? student.yearOfBirth : ""}</div>
-            <div className="col">{student !== undefined ? student.classId : ""}</div>
-            <div className="col">{t}</div>
+            <div className="col-2">{student !== undefined ? student.firstname : ""}</div>
+            <div className="col-2">{student !== undefined ? student.surname : ""}</div>
+            <div className="col-1">{student !== undefined ? student.startNumber : ""}</div>
+            <div className="col-1">{student !== undefined ? student.categoryId : ""}</div>
+            <div className="col-1">{student !== undefined ? student.yearOfBirth : ""}</div>
+            <div className="col-2">{student !== undefined ? student.classId : ""}</div>
+            <div className="col-1">{t}</div>
         </div>
     }
 }
