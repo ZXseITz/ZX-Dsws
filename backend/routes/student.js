@@ -99,114 +99,46 @@ module.exports = (router, dbs) => {
         });
     });
 
-    // router.get("/ranked", (req, res) => {
-    //     dbs.db.collection("students").aggregate([
-    //         {
-    //             $sort: {
-    //                 state: 1,
-    //                 time: 1,
-    //             }
-    //         },
-    //         {
-    //             $group: {
-    //                 _id: "$category",
-    //                 athlete: {
-    //                     $push: {
-    //                         number: "$number",
-    //                         firstname: "$firstname",
-    //                         surname: "$surname",
-    //                         year: "$year",
-    //                         schoolClass: "$schoolClass",
-    //                         state: "$state",
-    //                         time: "$time",
-    //                     }
-    //                 }
-    //             }
-    //         },
-    //         {
-    //             $lookup: {
-    //                 from: "categories",
-    //                 localField: "_id",
-    //                 foreignField: "name",
-    //                 as: "category"
-    //             }
-    //         },
-    //         {
-    //             $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$category", 0]}, "$$ROOT"]}}
-    //         },
-    //         {
-    //             $sort: {
-    //                 age: 1,
-    //                 sex: 1,
-    //             }
-    //         },
-    //         {
-    //             $project: {
-    //                 _id: 0,
-    //                 age: 0,
-    //                 sex: 0,
-    //                 category: 0
-    //             }
-    //         }
-    //     ]).toArray((err, data) => {
-    //         if (!err) {
-    //             res.json(data);
-    //         } else {
-    //             console.error(err);
-    //             res.status(500).send();
-    //         }
-    //     });
-    // });
-
-    // router.get("/run", (req, res) => {
-    //     dbs.db.collection("run").aggregate([
-    //         {
-    //             $unwind: "$athlete"
-    //         },
-    //         {
-    //             $lookup: {
-    //                 from: "athlete",
-    //                 localField: "athlete",
-    //                 foreignField: "number",
-    //                 as: "concreteAthlete"
-    //             }
-    //         },
-    //         {
-    //             $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$concreteAthlete", 0]}, "$$ROOT"]}}
-    //         },
-    //         {
-    //             $group: {
-    //                 _id: {
-    //                     block: "$block",
-    //                     distance: "$distance",
-    //                     startTime: "$startTime"
-    //                 },
-    //                 athlete: {
-    //                     $push: {
-    //                         number: "$number",
-    //                         firstname: "$firstname",
-    //                         surname: "$surname",
-    //                         year: "$year",
-    //                         schoolClass: "$schoolClass",
-    //                         category: "$category"
-    //                     }
-    //                 }
-    //             }
-    //         },
-    //         {
-    //             $sort: {
-    //                 "_id.block": 1
-    //             }
-    //         }
-    //     ]).toArray((err, data) => {
-    //         if (!err) {
-    //             res.json(data);
-    //         } else {
-    //             console.error(err);
-    //             res.status(500).send();
-    //         }
-    //     });
-    // });
+    router.get("/ranked", (req, res) => {
+        dbs.db.collection("categories").aggregate([
+            {
+                $sort: {
+                    categoryAge: 1,
+                    sex: 1,
+                }
+            },
+            {
+                $lookup: {
+                    from: "students",
+                    let: {pCatId: "$categoryId"},
+                    pipeline: [
+                        {$match: {$expr: {$eq: ["$categoryId", "$$pCatId"]}}},
+                        {
+                            $sort: {
+                                "run.state": 1,
+                                "run.time": 1,
+                                "startNumber": 1
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                categoryId: 0
+                            }
+                        }
+                    ],
+                    as: "students"
+                }
+            }
+        ]).toArray((err, data) => {
+            if (!err) {
+                res.json(data);
+            } else {
+                console.error(err);
+                res.status(500).send();
+            }
+        });
+    });
 
     router.get("/:id", (req, res) => {
         const id = req.params.id;

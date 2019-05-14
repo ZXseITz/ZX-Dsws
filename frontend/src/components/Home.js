@@ -14,7 +14,7 @@ export default class Dashboard extends Component {
     }
 
     componentDidMount() {
-        fetch(`http://${config.host}/api/athlete/ranked`, {
+        fetch(`http://${config.host}/api/students/ranked`, {
             method: 'GET'
         })
             .then(res => res.json())
@@ -29,24 +29,24 @@ export default class Dashboard extends Component {
         const items = [];
         data.forEach((item, i) => {
             items.push(<a key={item.name} className="dropdown-item" onClick={() => this.setState({idx: i})}>
-                    {item.name}, {item.distance}m
+                    {item.categoryId}, {item.distance}m
                 </a>)
         });
         let title = '';
         const rows = [];
         const current = data[this.state.idx];
         if (current !== undefined) {
-            title = `${current.name}, ${current.distance}m`;
+            title = `${current.categoryId}, ${current.distance}m`;
                 let pTime = data[0].time;
                 let rank = 1;
                 let aTime;
-                current.athlete.forEach(item => {
-                    switch (item.state) {
+                current.students.forEach(item => {
+                    switch (item.run.state) {
                         case 0:
-                            aTime = item.time;
-                            if (item.time > pTime) {
+                            aTime = item.run.time;
+                            if (item.run.time > pTime) {
                                 rank += 1;
-                                pTime = item.time;
+                                pTime = item.run.time;
                             }
                             break;
                         case 1:
@@ -55,19 +55,19 @@ export default class Dashboard extends Component {
                             break;
                         case 2:
                             rank = '-';
-                            aTime = 'DNS';
+                            aTime = 'DNF';
                             break;
                         case 3:
                             rank = '-';
-                            aTime = 'DNF';
+                            aTime = 'DNS';
                             break;
                     }
                     rows.push(<tr key={item.number}>
                         <td>{rank}</td>
                         <td>{item.firstname}</td>
                         <td>{item.surname}</td>
-                        <td>{item.year}</td>
-                        <td>{item.schoolClass}</td>
+                        <td>{item.yearOfBirth}</td>
+                        <td>{item.classId}</td>
                         <td>{aTime}</td>
                     </tr>);
                 });
