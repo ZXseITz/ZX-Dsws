@@ -22,13 +22,13 @@ export default class CategoryItem extends Component {
     render() {
         const type = this.state.type;
         const content = [];
-        content.push(<h5 className="col-2">{this.state.name}</h5>);
+        content.push(<h5 key={0} className="col-2">{this.state.name}</h5>);
         if (type === "read") {
             // read category
-            content.push(<div className="col-3">{this.state.age}</div>);
-            content.push(<div className="col-3">{this.state.sex}</div>);
-            content.push(<div className="col-2">{this.state.distance}m</div>);
-            content.push(<div className="col-2">
+            content.push(<div key={1} className="col-3">{this.state.age}</div>);
+            content.push(<div key={2} className="col-3">{this.state.sex}</div>);
+            content.push(<div key={3} className="col-2">{this.state.distance}m</div>);
+            content.push(<div key={4} className="col-2">
                 <button type="button" className="btn btn-primary" onClick={() => {
                     this.setState({type: "mod"});
                 }}>
@@ -37,14 +37,14 @@ export default class CategoryItem extends Component {
             </div>);
         } else {
             // write category
-            content.push(<input className="col-3 form-control entry-value" type="text" onChange={e => {
+            content.push(<input key={1} className="col-3 form-control entry-value" type="text" onChange={e => {
                 const age = parseInt(e.target.value);
                 this.setState({
                     name: `${this.state.sex}${age}`,
                     age: age,
                 });
             }} value={this.state.age}/>);
-            content.push(<select className="col-3 form-control entry-value" onChange={e => {
+            content.push(<select key={2} className="col-3 form-control entry-value" onChange={e => {
                 const sex = e.target.value;
                 this.setState({
                     name: `${sex}${this.state.age}`,
@@ -54,20 +54,20 @@ export default class CategoryItem extends Component {
                 <option>m</option>
                 <option>w</option>
             </select>);
-            content.push(<input className="col-2 form-control entry-value" type="text" onChange={e => {
+            content.push(<input key={3} className="col-2 form-control entry-value" type="text" onChange={e => {
                 this.setState({
                     distance: parseInt(e.target.value),
                 });
             }} value={this.state.distance}/>);
             if (type === "add") {
                 // add new category
-                content.push(<div className="col-2">
+                content.push(<div key={4} className="col-2">
                     {this.createSaveButton("Hinzufügen")}
                     {this.createCancelButton("Abbrechen")}
                 </div>);
             } else {
                 // modify category
-                content.push(<div className="col-2">
+                content.push(<div key={4} className="col-2">
                     {this.createSaveButton("Speichern")}
                     {this.createDeleteButton("Löschen")}
                     {this.createCancelButton("Abbrechen")}
@@ -82,6 +82,7 @@ export default class CategoryItem extends Component {
 
     createSaveButton(title) {
         return <button type="button" className="btn btn-primary" onClick={() => {
+            this.setState({type: "read"});
             if (typeof this.onSave === "function") {
                 this.onSave({
                     categoryId: this.state.name,
@@ -90,7 +91,6 @@ export default class CategoryItem extends Component {
                     distance: this.state.distance,
                 });
             }
-            this.setState({type: "read"});
         }}>
             {title}
         </button>
@@ -98,10 +98,10 @@ export default class CategoryItem extends Component {
 
     createCancelButton(title) {
         return <button type="button" className="btn btn-secondary" onClick={() => {
+            this.setState({type: "read"});
             if (typeof this.onCancel === "function") {
                 this.onCancel();
             }
-            this.setState({type: "read"});
         }}>
             {title}
         </button>
@@ -109,10 +109,10 @@ export default class CategoryItem extends Component {
 
     createDeleteButton(title) {
         return <button type="button" className="btn btn-danger" onClick={() => {
+            this.setState({type: "read"});
             if (typeof this.onDelete === "function") {
                 this.onDelete();
             }
-            this.setState({type: "read"});
         }}>
             {title}
         </button>

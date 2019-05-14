@@ -5,7 +5,7 @@ import Navigation from "./components/Navigation"
 import Home from "./components/Home"
 import Blocks from "./components/Blocks";
 import Categories from "./components/Categories";
-import Student from "./components/Student";
+import Students from "./components/Students";
 import Error from "./components/Error"
 
 class App extends Component {
@@ -19,7 +19,7 @@ class App extends Component {
               <Route exact path="/" component={Home}/>
               <Route path="/blocks" component={Blocks}/>
               <Route path="/categories" component={Categories}/>
-              <Route path="/students" component={Student}/>
+              <Route path="/students" component={Students}/>
               <Route component={Error}/>
             </Switch>
           </div>
