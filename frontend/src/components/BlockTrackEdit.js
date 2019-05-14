@@ -33,7 +33,7 @@ export default class BlockTrackEdit extends Component {
         const track = this.track;
         const student = this.state.student;
         const items = [];
-        items.push(<div key={0} className="change-item dropdown-item" onClick={() => {
+        items.push(<div key={0} className="dropdown-entry dropdown-item" onClick={() => {
             this.onChange(this.state.student, undefined);
             this.setState({
                 student: undefined,
@@ -43,7 +43,7 @@ export default class BlockTrackEdit extends Component {
             Leer
         </div>);
         this.items.forEach(item => {
-            items.push(<div key={item._id} className="change-item dropdown-item" onClick={() => {
+            items.push(<div key={item._id} className="dropdown-entry dropdown-item" onClick={() => {
                 this.onChange(this.state.student, item);
                 this.setState({
                     student: item,

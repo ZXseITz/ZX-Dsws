@@ -1,0 +1,48 @@
+:root {
+    --entry-border-color: darkgreen;
+    --track-border-color: darkred;
+    --hover-color: #FFAAAA;
+}
+
+.entry {
+    border: 1px solid var(--entry-border-color);
+    margin-top: 0.2cm;
+    padding: 0.2cm;
+}
+
+.dropdown-entry:hover {
+    background: #AAAAFF;
+}
+
+.entry:hover {
+    background: var(--hover-color);
+}
+
+.entry-value {
+    text-align: center;
+}
+
+
+.entries-header {
+    margin-top: 0.2cm;
+    font-size: 0.5cm;
+    font-weight: bold;
+    text-align: center;
+}
+
+.block {
+    border: 1px solid var(--entry-border-color);
+    margin-top: 1cm;
+    padding: 0.2cm;
+}
+
+.block-header {
+    text-align: left;
+    padding: 0.5cm 0.5cm;
+}
+
+.block-track {
+    border: 1px solid var(--track-border-color);
+    margin-top: 0.1cm;
+    padding: 0.2cm;
+}

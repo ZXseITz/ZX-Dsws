@@ -132,7 +132,7 @@ export default class BlockItem extends Component {
         }
 
         return <div className='row block'>
-            <div className='col-3 block-title'>
+            <div className='col-3 block-header'>
                 <h4>Block: {item.blockId}</h4>
                 <p>Startzeit: {date.toLocaleTimeString()}</p>
                 <p>Distanz: {item.distance}m</p>

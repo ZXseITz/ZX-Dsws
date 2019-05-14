@@ -37,14 +37,14 @@ export default class CategoryItem extends Component {
             </div>);
         } else {
             // write category
-            content.push(<input className="col-3 form-control category-value" type="text" onChange={e => {
+            content.push(<input className="col-3 form-control entry-value" type="text" onChange={e => {
                 const age = parseInt(e.target.value);
                 this.setState({
                     name: `${this.state.sex}${age}`,
                     age: age,
                 });
             }} value={this.state.age}/>);
-            content.push(<select className="col-3 form-control category-value" onChange={e => {
+            content.push(<select className="col-3 form-control entry-value" onChange={e => {
                 const sex = e.target.value;
                 this.setState({
                     name: `${sex}${this.state.age}`,
@@ -54,7 +54,7 @@ export default class CategoryItem extends Component {
                 <option>m</option>
                 <option>w</option>
             </select>);
-            content.push(<input className="col-2 form-control category-value" type="text" onChange={e => {
+            content.push(<input className="col-2 form-control entry-value" type="text" onChange={e => {
                 this.setState({
                     distance: parseInt(e.target.value),
                 });
@@ -75,7 +75,7 @@ export default class CategoryItem extends Component {
             }
         }
 
-        return <div className="row category">
+        return <div className="row entry">
             {content}
         </div>
     }

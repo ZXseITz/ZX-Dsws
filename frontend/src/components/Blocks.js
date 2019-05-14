@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import config from "../config";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.js';
-import './Block.css'
+import './Main.css'
 import $ from "jquery";
 import BlockItem from "./BlockItem";
 

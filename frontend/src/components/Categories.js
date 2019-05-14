@@ -1,6 +1,6 @@
 import React, {Component} from "react"
 import 'bootstrap/dist/css/bootstrap.css';
-import './Category.css';
+import './Main.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import config from "../config.json"
 import CategoryItem from "./CategoryItem";
@@ -114,7 +114,7 @@ export default class Categories extends Component {
                     <div className="row">
                         <div className="col"/>
                         <div className="col-10">
-                            <div className="row category-header">
+                            <div className="row entries-header">
                                 <div className="col-2">Name</div>
                                 <div className="col-3">Altersklasse</div>
                                 <div className="col-3">Geschlecht</div>
