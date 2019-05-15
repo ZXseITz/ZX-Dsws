@@ -5,6 +5,18 @@ const FileReader = require('filereader');
 
 function uploadStudents(req, res, dbs) {
     const form = new formidable.IncomingForm();
+    let getLocDist = (loc) => {
+        switch (loc[0]) {
+            case "D":
+                // dorf
+                return 3;
+            case "V":
+                //brüel
+                return 2;
+            default:
+                return 1;
+        }
+    };
     form.parse(req, (err, fields, files) => {
         if (err) {
             console.error(err);
@@ -13,24 +25,37 @@ function uploadStudents(req, res, dbs) {
             const file = files.csv;
             const reader = new FileReader();
             reader.onload = () => {
-                const list = [];
+                const students = [];
+                const classes = {};
                 let counter = 1;
                 const lines = reader.result.split(/\r?\n/);
                 for (let i = 1; i < lines.length - 1; i++) {
                     const attr = lines[i].split(';');
                     if (attr[0] === "") continue;
+                    const classId = attr[0];
+                    const loc = attr[1].substr(11);
+
+                    if (!classes.hasOwnProperty(classId)) {
+                        classes[classId] = {
+                            classId: classId,
+                            teacher: attr[2],
+                            loc: loc,
+                            locDist: getLocDist(loc)
+                        }
+                    }
+
                     const dateOfBirth = moment(attr[5], "DD.MM.YYYY");
                     const year = dateOfBirth.year();
                     //todo change current year
                     const age = 2019 - year;
                     const category = `${attr[6].toLowerCase()}${age < 7 ? 7 : age > 16 ? 16 : age}`;
-                    list.push({
+                    students.push({
                         startNumber: counter,
                         firstname: attr[4],
                         surname: attr[3],
                         yearOfBirth: year,
-                        classId: attr[0].substr(1),
                         categoryId: category,
+                        classId: classId,
                         run: {
                             blockId: 0,
                             track: 0,
@@ -41,15 +66,27 @@ function uploadStudents(req, res, dbs) {
                     counter += 1;
                 }
 
-                dbs.dbAdmin.collection('students').insertMany(list, (err, data) => {
-                    if (!err) {
-                        console.log(`uploaded all students`);
-                        res.status(204).send()
-                    } else {
-                        console.log(`failed uploading students`);
-                        res.status(500).send();
-                    }
-                })
+
+                Promise.all([
+                    new Promise(() => dbs.dbAdmin.collection('classes')
+                        .insertMany(Object.values(classes), (err, data) => {
+                        if (!err) {
+                            console.log(`uploaded all classes`);
+                        } else {
+                            console.log(`failed uploading classes`);
+                        }
+                    })),
+                    new Promise(() => dbs.dbAdmin.collection('students')
+                        .insertMany(students, (err, data) => {
+                        if (!err) {
+                            console.log(`uploaded all students`);
+                        } else {
+                            console.log(`failed uploading students`);
+                        }
+                    }))
+                ])
+                    .then(() => res.status(204).send())
+                    .catch(() => res.status(500).send())
             };
             reader.readAsText(file)
         }
