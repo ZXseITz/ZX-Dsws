@@ -1,4 +1,4 @@
-const ObjectID = require("mongodb").ObjectID;
+// const ObjectID = require("mongodb").ObjectID;
 const moment = require('moment');
 const formidable = require('formidable');
 const FileReader = require('filereader');
@@ -41,7 +41,7 @@ function uploadStudents(req, res, dbs) {
                             teacher: attr[2],
                             loc: loc,
                             locDist: getLocDist(loc)
-                        }
+                        };
                     }
 
                     const dateOfBirth = moment(attr[5], "DD.MM.YYYY");
@@ -70,20 +70,20 @@ function uploadStudents(req, res, dbs) {
                 Promise.all([
                     new Promise(() => dbs.dbAdmin.collection('classes')
                         .insertMany(Object.values(classes), (err, data) => {
-                        if (!err) {
-                            console.log(`uploaded all classes`);
-                        } else {
-                            console.log(`failed uploading classes`);
-                        }
-                    })),
+                            if (!err) {
+                                console.log(`uploaded all classes`);
+                            } else {
+                                console.log(`failed uploading classes`);
+                            }
+                        })),
                     new Promise(() => dbs.dbAdmin.collection('students')
                         .insertMany(students, (err, data) => {
-                        if (!err) {
-                            console.log(`uploaded all students`);
-                        } else {
-                            console.log(`failed uploading students`);
-                        }
-                    }))
+                            if (!err) {
+                                console.log(`uploaded all students`);
+                            } else {
+                                console.log(`failed uploading students`);
+                            }
+                        }))
                 ])
                     .then(() => res.status(204).send())
                     .catch(() => res.status(500).send())
@@ -95,11 +95,27 @@ function uploadStudents(req, res, dbs) {
 
 function initBlocks(req, res, dbs) {
     //todo flexible sort
-    dbs.dbAdmin.collection('students').aggregate([
+    dbs.dbAdmin.collection("classes").aggregate([
         {
             $lookup: {
-                from: 'categories',
-                let: {pCatId: '$categoryId'},
+                from: "classes",
+                let: {pClassId: "$classId"},
+                pipeline: [
+                    {$match: {$expr: {$eq: ["$classId", "$$pClassId"]}}},
+                    {
+                        $project: {
+                            _id: 0,
+                            classId: 0
+                        }
+                    }
+                ],
+                as: "classes"
+            }
+        },
+        {
+            $lookup: {
+                from: "categories",
+                let: {pCatId: "$categoryId"},
                 pipeline: [
                     {$match: {$expr: {$eq: ["$categoryId", "$$pCatId"]}}},
                     {
@@ -109,86 +125,101 @@ function initBlocks(req, res, dbs) {
                         }
                     }
                 ],
-                as: 'category'
+                as: "categories"
             }
         },
         {
-            $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$category", 0]}, "$$ROOT"]}}
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+                        "$$ROOT",
+                        {$arrayElemAt: ["$categories", 0]},
+                        {$arrayElemAt: ["$classes", 0]}
+                    ]
+                }
+            }
         },
         {
             $project: {
-                category: 0
+                categories: 0,
+                classes: 0,
             }
         },
         {
             $sort: {
                 distance: 1,
-                classId: 1,
+                categoryAge: 1,
                 sex: 1,
                 startNumber: 1,
             }
         },
         {
             $group: {
-                _id: '$distance',
+                _id: {
+                    locDist: "$locDist",
+                    teacher: "$teacher",
+                },
                 students: {
-                    $push: '$_id'
+                    $push: {
+                        startNumber: "$startNumber"
+                    }
                 }
             }
         },
         {
             $sort: {
-                _id: 1,
+                "_id.locDist": -1,
+                "id.teacher": 1,
             }
         }
     ]).toArray((err, data) => {
         if (!err) {
             const items = [];
             //todo simplify zimezone summer/winter
-            const timeManager = new TimeManager(2,
-                "2019-05-24 09:30:00",
-                "2019-05-24 11:40:00",
-                "2019-05-24 13:30:00");
-            const blockCounter = new Counter(1);
-            let blockId, startTime, track;
-            data.forEach(distance => {
-                track = 1;
-                distance.students.forEach(studentId => {
-                    if (track === 1) {
-                        blockId = blockCounter.get();
-                        startTime = timeManager.get();
-                        items.push({
-                            blockId: blockId,
-                            startTime: startTime,
-                            distance: distance._id,
-                        });
-                    }
-                    dbs.dbAdmin.collection("students").updateOne({_id: studentId}, {
-                        "$set": {
-                            "run.blockId": blockId,
-                            "run.track": track
-                        }
-                    }, (dberr, dbres) => {
-                        if (!dberr) {
-                            console.log(`updated run for student ${studentId}`);
-                        } else {
-                            console.log(`failed updating run for student ${studentId}`);
-                        }
-                    });
-                    track = (track % 4) + 1;
-                });
-                // add space for hot fixes
-                blockCounter.get(5)
-            });
-            dbs.dbAdmin.collection('blocks').insertMany(items, (dberr, dbres) => {
-                if (!dberr) {
-                    console.log(`created blocks`);
-                    res.status(204).send()
-                } else {
-                    console.log(`failed creating blocks`);
-                    res.status(500).send();
-                }
-            });
+            // const timeManager = new TimeManager(2,
+            //     "2019-05-24 09:30:00",
+            //     "2019-05-24 11:40:00",
+            //     "2019-05-24 13:30:00");
+            // const blockCounter = new Counter(1);
+            // let blockId, startTime, track;
+            // data.forEach(distance => {
+            //     track = 1;
+            //     distance.students.forEach(studentId => {
+            //         if (track === 1) {
+            //             blockId = blockCounter.get();
+            //             startTime = timeManager.get();
+            //             items.push({
+            //                 blockId: blockId,
+            //                 startTime: startTime,
+            //                 distance: distance._id,
+            //             });
+            //         }
+            //         dbs.dbAdmin.collection("students").updateOne({_id: studentId}, {
+            //             "$set": {
+            //                 "run.blockId": blockId,
+            //                 "run.track": track
+            //             }
+            //         }, (dberr, dbres) => {
+            //             if (!dberr) {
+            //                 console.log(`updated run for student ${studentId}`);
+            //             } else {
+            //                 console.log(`failed updating run for student ${studentId}`);
+            //             }
+            //         });
+            //         track = (track % 4) + 1;
+            //     });
+            //     // add space for hot fixes
+            //     blockCounter.get(5)
+            // });
+            // dbs.dbAdmin.collection('blocks').insertMany(items, (dberr, dbres) => {
+            //     if (!dberr) {
+            //         console.log(`created blocks`);
+            //         res.status(204).send()
+            //     } else {
+            //         console.log(`failed creating blocks`);
+            //         res.status(500).send();
+            //     }
+            // });
         } else {
             console.error(err);
             res.status(500).send();
