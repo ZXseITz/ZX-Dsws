@@ -13,13 +13,13 @@ export default class Categories extends Component {
             newCat: {}
         };
 
-        this.loadCategories.bind(this);
-        this.createCategory.bind(this);
-        this.updateCategory.bind(this);
-        this.deleteCategory.bind(this);
+        this.load.bind(this);
+        this.create.bind(this);
+        this.update.bind(this);
+        this.delete.bind(this);
     };
 
-    loadCategories = () => {
+    load = () => {
         fetch(`http://${config.host}/api/categories`, {
             method: 'GET'
         })
@@ -41,48 +41,48 @@ export default class Categories extends Component {
         });
     };
 
-    createCategory = (category) => {
+    create = (obj) => {
         fetch(`http://${config.host}/api/categories`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: this.stringifyCategory(category)
+            body: this.stringifyCategory(obj)
         })
             .then(() => console.log(`created category successfully`))
-            .then(() => this.loadCategories())
+            .then(() => this.load())
             .catch(err => console.error(err))
     };
 
-    updateCategory = (id, category) => {
+    update = (id, obj) => {
         fetch(`http://${config.host}/api/categories/${id}`, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: this.stringifyCategory(category)
+            body: this.stringifyCategory(obj)
         })
             .then(() => console.log(`updated category ${id} successfully`))
-            .then(() => this.loadCategories())
+            .then(() => this.load())
             .catch(err => console.error(err))
     };
 
-    deleteCategory = (id) => {
+    delete = (id) => {
         fetch(`http://${config.host}/api/categories/${id}`, {
             method: 'DELETE'
         })
             .then(() => console.log(`deleted category ${id} successfully`))
-            .then(() => this.loadCategories())
+            .then(() => this.load())
             .catch(err => console.error(err))
     };
 
-    componentDidMount = () => this.loadCategories();
+    componentDidMount = () => this.load();
 
     render() {
         const rows = [];
         if (Object.entries(this.state.newCat).length > 0) {
             rows.push(<CategoryItem key={-1} item={this.state.newCat} type="add" onSave={x => {
-                this.createCategory(x);
+                this.create(x);
             }} onCancel={() => {
                 this.setState({newCat: {}})
             }}/>);
@@ -90,9 +90,9 @@ export default class Categories extends Component {
         }
         this.state.categories.forEach((item, i) => {
             rows.push(<CategoryItem key={i} item={item} type="read" onSave={x => {
-                this.updateCategory(item._id, x);
+                this.update(item._id, x);
             }} onDelete={() => {
-                this.deleteCategory(item._id);
+                this.delete(item._id);
             }}/>);
         });
 
