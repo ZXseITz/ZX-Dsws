@@ -13,25 +13,35 @@ module.exports = (router, dbs) => {
                     let: {pBlockId: "$blockId"},
                     pipeline: [
                         {$match: {$expr: {$eq: ["$run.blockId", "$$pBlockId"]}}},
-                        // {
-                        //     $lookup: {
-                        //         from: "categories",
-                        //         let: {pCatId: "$categoryId"},
-                        //         pipeline: [
-                        //             {$match: {$expr: {$eq: ["$categoryId", "$$pCatId"]}}},
-                        //         ],
-                        //         as: "category"
-                        //     },
-                        // },
-                        // {$replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$category", 0]}, "$$ROOT"]}}},
                         {
                             $project: {
                                 "run.blockId": 0,
-                                // "category": 0
                             }
                         }
                     ],
                     as: "students"
+                },
+            },
+            {
+                $group: {
+                    _id: {
+                        locDist: "$locDist",
+                        teacher: "$teacher",
+                    },
+                    blocks: {
+                        $push: {
+                            blockId: "$blockId",
+                            startTime: "$startTime",
+                            distance: "$distance",
+                            students: "$students",
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    "_id.locDist": -1,
+                    "_id.teacher": 1,
                 }
             }
         ]).toArray((err, data) => {

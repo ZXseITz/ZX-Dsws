@@ -201,6 +201,7 @@ function initBlocks(req, res, dbs) {
             let blockId, startTime;
             data.forEach(item => {
                 const teacher = item._id.teacher;
+                const locDist = item._id.locDist;
                 item.distances.forEach(d => {
                     const distance = d.distance;
                     let track = 1;
@@ -213,6 +214,7 @@ function initBlocks(req, res, dbs) {
                                 startTime: startTime,
                                 distance: distance,
                                 teacher: teacher,
+                                locDist: locDist,
                             })
                         }
                         new Promise(() => {
@@ -232,9 +234,9 @@ function initBlocks(req, res, dbs) {
                         });
                         track = (track % 4) + 1;
                     });
-                    blockCounter.get();
+                    // blockCounter.get();
                 });
-                blockCounter.get(5)
+                // blockCounter.get(5)
             });
             dbs.dbAdmin.collection('blocks').insertMany(blocks, (err, data) => {
                 if (!err) {

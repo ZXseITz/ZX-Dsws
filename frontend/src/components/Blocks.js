@@ -10,6 +10,7 @@ export default class Blocks extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            idx: 0,
             data: [],
         };
         this.load.bind(this);
@@ -78,12 +79,26 @@ export default class Blocks extends Component {
     }
 
     render() {
+        const data = this.state.data;
+        let title = "";
+        const teachers = [];
         const items = [];
-        this.state.data.forEach(item => {
-            items.push(
-                <BlockItem key={item.blockId} edit={false} item={item}/>
-            );
+        data.forEach((item, i) => {
+            const teacher = item._id.teacher;
+            teachers.push(<a key={i} className="dropdown-item" onClick={() => this.setState({idx: i})}>
+                {teacher}
+            </a>);
         });
+        const current = data[this.state.idx];
+        if (current !== undefined) {
+            title = current._id.teacher;
+
+            current.blocks.forEach(block => {
+                items.push(
+                    <BlockItem key={block.blockId} edit={false} item={block}/>
+                );
+            })
+        }
 
         return <div>
             <button type="button" className="btn btn-primary" onClick={() => this.initBlocks()}>Startgruppen automatisch
@@ -94,8 +109,20 @@ export default class Blocks extends Component {
             }}>
                 Erstellen
             </button>
-            <div className='container'>
-                {items}
+            <div className="teacher">
+                <div className="dropdown">
+                    <button className="btn btn-primary dropdown-toggle" id="dropdownMenuButton" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        {title}
+                    </button>
+                    <div className="dropdown-menu">
+                        {teachers}
+                    </div>
+                </div>
+
+                <div className='container'>
+                    {items}
+                </div>
             </div>
         </div>;
     };
