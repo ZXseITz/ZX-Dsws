@@ -95,7 +95,7 @@ function uploadStudents(req, res, dbs) {
 
 function initBlocks(req, res, dbs) {
     //todo flexible sort
-    dbs.dbAdmin.collection("classes").aggregate([
+    dbs.dbAdmin.collection("students").aggregate([
         {
             $lookup: {
                 from: "classes",
@@ -147,7 +147,6 @@ function initBlocks(req, res, dbs) {
         },
         {
             $sort: {
-                distance: 1,
                 categoryAge: 1,
                 sex: 1,
                 startNumber: 1,
@@ -156,12 +155,30 @@ function initBlocks(req, res, dbs) {
         {
             $group: {
                 _id: {
+                    distance: "$distance",
                     locDist: "$locDist",
                     teacher: "$teacher",
                 },
                 students: {
+                    $push: "$_id"
+                }
+            }
+        },
+        {
+            $sort: {
+                "_id.distance": 1
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    locDist: "$_id.locDist",
+                    teacher: "$_id.teacher",
+                },
+                distances: {
                     $push: {
-                        startNumber: "$startNumber"
+                        distance: "$_id.distance",
+                        students: "$students",
                     }
                 }
             }
@@ -169,57 +186,65 @@ function initBlocks(req, res, dbs) {
         {
             $sort: {
                 "_id.locDist": -1,
-                "id.teacher": 1,
+                "_id.teacher": 1,
             }
         }
     ]).toArray((err, data) => {
         if (!err) {
-            const items = [];
             //todo simplify zimezone summer/winter
-            // const timeManager = new TimeManager(2,
-            //     "2019-05-24 09:30:00",
-            //     "2019-05-24 11:40:00",
-            //     "2019-05-24 13:30:00");
-            // const blockCounter = new Counter(1);
-            // let blockId, startTime, track;
-            // data.forEach(distance => {
-            //     track = 1;
-            //     distance.students.forEach(studentId => {
-            //         if (track === 1) {
-            //             blockId = blockCounter.get();
-            //             startTime = timeManager.get();
-            //             items.push({
-            //                 blockId: blockId,
-            //                 startTime: startTime,
-            //                 distance: distance._id,
-            //             });
-            //         }
-            //         dbs.dbAdmin.collection("students").updateOne({_id: studentId}, {
-            //             "$set": {
-            //                 "run.blockId": blockId,
-            //                 "run.track": track
-            //             }
-            //         }, (dberr, dbres) => {
-            //             if (!dberr) {
-            //                 console.log(`updated run for student ${studentId}`);
-            //             } else {
-            //                 console.log(`failed updating run for student ${studentId}`);
-            //             }
-            //         });
-            //         track = (track % 4) + 1;
-            //     });
-            //     // add space for hot fixes
-            //     blockCounter.get(5)
-            // });
-            // dbs.dbAdmin.collection('blocks').insertMany(items, (dberr, dbres) => {
-            //     if (!dberr) {
-            //         console.log(`created blocks`);
-            //         res.status(204).send()
-            //     } else {
-            //         console.log(`failed creating blocks`);
-            //         res.status(500).send();
-            //     }
-            // });
+            const timeManager = new TimeManager(2,
+                "2019-05-24 09:30:00",
+                "2019-05-24 11:40:00",
+                "2019-05-24 13:30:00");
+            const blockCounter = new Counter(1);
+            const blocks = [];
+            let blockId, startTime;
+            data.forEach(item => {
+                const teacher = item._id.teacher;
+                item.distances.forEach(d => {
+                    const distance = d.distance;
+                    let track = 1;
+                    d.students.forEach(studentId => {
+                        if (track === 1) {
+                            blockId = blockCounter.get();
+                            startTime = timeManager.get();
+                            blocks.push({
+                                blockId: blockId,
+                                startTime: startTime,
+                                distance: distance,
+                                teacher: teacher,
+                            })
+                        }
+                        new Promise(() => {
+                            dbs.dbAdmin.collection('students').updateOne({_id: studentId}, {
+                                $set: {
+                                    "run.blockId": blockId,
+                                    "run.track": track,
+                                    "run.state": 1,
+                                }
+                            }, (err, data) => {
+                                if (!err) {
+                                    console.log(`updated student ${studentId}`);
+                                } else {
+                                    console.log(`failed updating ${studentId}`);
+                                }
+                            });
+                        });
+                        track = (track % 4) + 1;
+                    });
+                    blockCounter.get();
+                });
+                blockCounter.get(5)
+            });
+            dbs.dbAdmin.collection('blocks').insertMany(blocks, (err, data) => {
+                if (!err) {
+                    console.log(`created blocks`);
+                    res.status(204).send();
+                } else {
+                    console.log(`failed creating blocks`);
+                    res.status(500).send();
+                }
+            });
         } else {
             console.error(err);
             res.status(500).send();
